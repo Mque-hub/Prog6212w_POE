@@ -1,6 +1,6 @@
 <mxfile host="app.diagrams.net">
   <diagram name="Page-1" id="fmFPcfs2yiohNL_OnmSS">
-    <mxGraphModel dx="1717" dy="892" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="2575" dy="1338" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -124,6 +124,9 @@
         <mxCell id="YBZowrKDtW4sS2J8UTza-89" parent="YBZowrKDtW4sS2J8UTza-85" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontFamily=Helvetica;fontSize=12;fontColor=default;fontStyle=1;" value="EnrolmentDate" vertex="1">
           <mxGeometry height="30" width="90" x="35" y="130" as="geometry" />
         </mxCell>
+        <mxCell id="YBZowrKDtW4sS2J8UTza-139" parent="YBZowrKDtW4sS2J8UTza-85" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontFamily=Helvetica;fontSize=12;fontColor=default;fontStyle=1;" value="EventID (FK)" vertex="1">
+          <mxGeometry height="30" width="90" x="32.5" y="110" as="geometry" />
+        </mxCell>
         <mxCell id="YBZowrKDtW4sS2J8UTza-90" parent="1" style="swimlane;whiteSpace=wrap;html=1;startSize=20;" value="Race Results" vertex="1">
           <mxGeometry height="210" width="160" x="720" y="560" as="geometry" />
         </mxCell>
@@ -138,9 +141,6 @@
         </mxCell>
         <mxCell id="YBZowrKDtW4sS2J8UTza-94" parent="YBZowrKDtW4sS2J8UTza-90" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontFamily=Helvetica;fontSize=12;fontColor=default;fontStyle=1;" value="FinishPosition" vertex="1">
           <mxGeometry height="30" width="115" x="22.5" y="115" as="geometry" />
-        </mxCell>
-        <mxCell id="YBZowrKDtW4sS2J8UTza-95" parent="YBZowrKDtW4sS2J8UTza-90" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontFamily=Helvetica;fontSize=12;fontColor=default;fontStyle=1;" value="Award" vertex="1">
-          <mxGeometry height="30" width="115" x="22.5" y="180" as="geometry" />
         </mxCell>
         <mxCell id="YBZowrKDtW4sS2J8UTza-96" parent="YBZowrKDtW4sS2J8UTza-90" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontFamily=Helvetica;fontSize=12;fontColor=default;fontStyle=1;" value="PerformanceDetails" vertex="1">
           <mxGeometry height="30" width="115" x="22.5" y="150" as="geometry" />
@@ -262,7 +262,7 @@
         <mxCell id="YBZowrKDtW4sS2J8UTza-133" parent="1" style="triangle;whiteSpace=wrap;html=1;shapeInside=1;rotation=-180;fillColor=#647687;fontColor=#ffffff;strokeColor=#314354;" value="&lt;div&gt;&lt;br/&gt;&lt;/div&gt;" vertex="1">
           <mxGeometry height="10" width="10" x="630" y="630" as="geometry" />
         </mxCell>
-        <mxCell id="YBZowrKDtW4sS2J8UTza-134" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="1..*" vertex="1">
+        <mxCell id="YBZowrKDtW4sS2J8UTza-134" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="1" vertex="1">
           <mxGeometry height="30" width="60" x="870" y="660" as="geometry" />
         </mxCell>
         <mxCell id="YBZowrKDtW4sS2J8UTza-135" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="0..*" vertex="1">
