@@ -19,7 +19,7 @@ jobs:
         run: test -f "docs/PROG6212_ ST10478144_ POE_ RaceDay ERD Diagram.pdf"
 
       - name: Check API Endpoint Plan
-        run: test -f "docs/RaceDay_API Endpoint Planning.pdf"
+        run: test -f "docs/RaceDay_ API Endpoint Planning.pdf"
 
       - name: Check SQL Script
         run: test -f "docs/RaceDay Database SQLQuery.sql"
