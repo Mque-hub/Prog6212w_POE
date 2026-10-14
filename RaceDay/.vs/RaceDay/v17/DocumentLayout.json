@@ -1,10 +1,22 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\Student\\source\\repos\\RaceDay\\",
+  "WorkspaceRootPath": "C:\\Users\\Student\\Documents\\GitHub\\Prog6212w_POE\\RaceDay\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{BDA0543A-D16F-45A0-92D4-92B8B21AE634}|RaceDay.Api\\RaceDay.Api.csproj|c:\\users\\student\\source\\repos\\raceday\\raceday.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{177E9F42-0581-456D-AB2F-A6846B6B1ABE}|RaceDay.Api.Tests\\RaceDay.Api.Tests.csproj|c:\\users\\student\\documents\\github\\prog6212w_poe\\raceday\\raceday.api.tests\\unittest1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{177E9F42-0581-456D-AB2F-A6846B6B1ABE}|RaceDay.Api.Tests\\RaceDay.Api.Tests.csproj|solutionrelative:raceday.api.tests\\unittest1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1AC45D2A-E081-4CDE-BEE6-D84FD29CF2D9}|RaceDay.Contract\\RaceDay.Contracts.csproj|c:\\users\\student\\documents\\github\\prog6212w_poe\\raceday\\raceday.contract\\raceday.contracts.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{1AC45D2A-E081-4CDE-BEE6-D84FD29CF2D9}|RaceDay.Contract\\RaceDay.Contracts.csproj|solutionrelative:raceday.contract\\raceday.contracts.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{BDA0543A-D16F-45A0-92D4-92B8B21AE634}|RaceDay.Api\\RaceDay.Api.csproj|c:\\users\\student\\documents\\github\\prog6212w_poe\\raceday\\raceday.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{BDA0543A-D16F-45A0-92D4-92B8B21AE634}|RaceDay.Api\\RaceDay.Api.csproj|solutionrelative:raceday.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1AC45D2A-E081-4CDE-BEE6-D84FD29CF2D9}|RaceDay.Contract\\RaceDay.Contracts.csproj|c:\\users\\student\\documents\\github\\prog6212w_poe\\raceday\\raceday.contract\\class1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1AC45D2A-E081-4CDE-BEE6-D84FD29CF2D9}|RaceDay.Contract\\RaceDay.Contracts.csproj|solutionrelative:raceday.contract\\class1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -19,15 +31,55 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "UnitTest1.cs",
+              "DocumentMoniker": "C:\\Users\\Student\\Documents\\GitHub\\Prog6212w_POE\\RaceDay\\RaceDay.Api.Tests\\UnitTest1.cs",
+              "RelativeDocumentMoniker": "RaceDay.Api.Tests\\UnitTest1.cs",
+              "ToolTip": "C:\\Users\\Student\\Documents\\GitHub\\Prog6212w_POE\\RaceDay\\RaceDay.Api.Tests\\UnitTest1.cs",
+              "RelativeToolTip": "RaceDay.Api.Tests\\UnitTest1.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAIwAoAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-14T10:43:46.893Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "RaceDay.Contracts.csproj",
+              "DocumentMoniker": "C:\\Users\\Student\\Documents\\GitHub\\Prog6212w_POE\\RaceDay\\RaceDay.Contract\\RaceDay.Contracts.csproj",
+              "RelativeDocumentMoniker": "RaceDay.Contract\\RaceDay.Contracts.csproj",
+              "ToolTip": "C:\\Users\\Student\\Documents\\GitHub\\Prog6212w_POE\\RaceDay\\RaceDay.Contract\\RaceDay.Contracts.csproj",
+              "RelativeToolTip": "RaceDay.Contract\\RaceDay.Contracts.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-10-14T10:42:01.907Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Class1.cs",
+              "DocumentMoniker": "C:\\Users\\Student\\Documents\\GitHub\\Prog6212w_POE\\RaceDay\\RaceDay.Contract\\Class1.cs",
+              "RelativeDocumentMoniker": "RaceDay.Contract\\Class1.cs",
+              "ToolTip": "C:\\Users\\Student\\Documents\\GitHub\\Prog6212w_POE\\RaceDay\\RaceDay.Contract\\Class1.cs",
+              "RelativeToolTip": "RaceDay.Contract\\Class1.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-14T10:41:41.504Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
               "Title": "Program.cs",
-              "DocumentMoniker": "C:\\Users\\Student\\source\\repos\\RaceDay\\RaceDay.Api\\Program.cs",
+              "DocumentMoniker": "C:\\Users\\Student\\Documents\\GitHub\\Prog6212w_POE\\RaceDay\\RaceDay.Api\\Program.cs",
               "RelativeDocumentMoniker": "RaceDay.Api\\Program.cs",
-              "ToolTip": "C:\\Users\\Student\\source\\repos\\RaceDay\\RaceDay.Api\\Program.cs",
+              "ToolTip": "C:\\Users\\Student\\Documents\\GitHub\\Prog6212w_POE\\RaceDay\\RaceDay.Api\\Program.cs",
               "RelativeToolTip": "RaceDay.Api\\Program.cs",
               "ViewState": "AgIAAAYAAACAaGZmZmYEwAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-13T13:31:35.254Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-10-13T13:31:35.254Z"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{56df62a4-05a3-4e5b-aa1a-99371ccfb997}"
             }
           ]
         }
