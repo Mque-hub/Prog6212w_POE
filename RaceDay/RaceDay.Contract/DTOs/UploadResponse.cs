@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace RaceDay.Contracts.DTOs
 {
-    internal class UploadResponse
+    public class UploadResponse
     {
+        
     }
 }

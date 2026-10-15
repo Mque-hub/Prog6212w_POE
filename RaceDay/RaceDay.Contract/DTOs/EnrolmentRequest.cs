@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace RaceDay.Contracts.DTOs
 {
-    internal class EnrolmentRequest
+    public class EnrolmentRequest
     {
+        public int CategoryId { get; set; }
+        public string EnrolmentType { get; set; }
     }
 }

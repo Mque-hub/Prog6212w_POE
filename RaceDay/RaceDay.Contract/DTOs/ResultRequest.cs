@@ -6,7 +6,12 @@ using System.Threading.Tasks;
 
 namespace RaceDay.Contracts.DTOs
 {
-    internal class ResultRequest
+    public class ResultRequest
     {
+        public int EnrolmentID { get; set; }
+        public TimeSpan FinishTime { get; set; }
+        public int FinishPosition { get; set; }
+        public string PerformanceDetails { get; set; }
+        public string Award { get; set; }
     }
 }

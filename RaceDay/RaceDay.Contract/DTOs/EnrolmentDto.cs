@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 
 namespace RaceDay.Contracts.DTOs
 {
-    internal class EnrolmentDto
+    public class EnrolmentDto
     {
+        public int EnrolmentId {  get; set; }
+        public int AccountId { get; set; }
+        public int CategoryId {  get; set; }
+        public string EnrolmentType { get; set; }
     }
 }

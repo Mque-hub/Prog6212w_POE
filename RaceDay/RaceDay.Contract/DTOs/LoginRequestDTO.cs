@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace RaceDay.Contracts.DTOs
 {
-    internal class LoginRequestDTO
+    public class LoginRequestDTO
     {
+        public string AuthenticationRole { get; set; }
+        public string Email { get; set; }
+        public string Password { get; set; }
     }
 }

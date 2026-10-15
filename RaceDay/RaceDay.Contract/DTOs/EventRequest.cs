@@ -6,7 +6,14 @@ using System.Threading.Tasks;
 
 namespace RaceDay.Contracts.DTOs
 {
-    internal class EventRequest
+    public class EventRequest
     {
+        public string EventName { get; set; }
+        public string Description { get; set; }
+        public string EventType { get; set; }
+        public DateOnly EventDate { get; set; }
+        public TimeSpan EventDuration { get; set; }
+        public string Location { get; set; }
+        public decimal Distance { get; set; }
     }
 }
