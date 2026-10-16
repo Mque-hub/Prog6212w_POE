@@ -6,7 +6,7 @@ namespace RaceDay.Api.Models
     {
         public int AwardsId { get; set; }
         public string AwardsDetails { get; set; }
-        public string RaceResultsID { get; set; }
-        public RaceResults RaceResults { get; set; }
+        public int RaceResultsID { get; set; }
+        public RaceResults RaceResults { get; set; } = null!;
     }
 }

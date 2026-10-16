@@ -11,6 +11,6 @@
         public int FinishPosition { get; set; }
         public string PerformanceDetails { get; set; }
 
-        public Awards? Awards { get; set; }
+        public ICollection<Awards> Awards { get; set; } = new List<Awards>();
     }
 }
