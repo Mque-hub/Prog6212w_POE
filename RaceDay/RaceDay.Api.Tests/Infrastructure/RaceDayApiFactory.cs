@@ -26,12 +26,16 @@ namespace RaceDay.Api.Tests.Infrastructure
                 services.RemoveAll<
                     DbContextOptions<RaceDayDbContext>>();
 
+                var connectionString =
+                    Environment.GetEnvironmentVariable(
+                        "RACEDAY_TEST_CONNECTION")
+                    ?? "Server=LabVM2049939\\SQLEXPRESS;" +
+                       "Database=RaceDayTests;" +
+                       "Trusted_Connection=True;" +
+                       "TrustServerCertificate=True;";
+
                 services.AddDbContext<RaceDayDbContext>(
-                    options => options.UseSqlServer(
-                        "Server=LabVM2049939\\SQLEXPRESS;" +
-                        "Database=RaceDayTests;" +
-                        "Trusted_Connection=True;" +
-                        "TrustServerCertificate=True;"));
+                    options => options.UseSqlServer(connectionString));
             });
         }
     }
