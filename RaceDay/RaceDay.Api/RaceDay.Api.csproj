@@ -21,4 +21,9 @@
     <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="8.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\RaceDay.Api.Tests\RaceDay.Api.Tests.csproj" />
+    <ProjectReference Include="..\RaceDay.Contract\RaceDay.Contracts.csproj" />
+  </ItemGroup>
+
 </Project>
