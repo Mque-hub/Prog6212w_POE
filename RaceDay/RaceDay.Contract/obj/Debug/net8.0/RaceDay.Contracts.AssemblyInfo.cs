@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("RaceDay.Contracts")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3ffc470938c4ed27c5dfe39257c036d17edafb21")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+01713ae923d2e3fe6f10e486cc03b2141f2669fa")]
 [assembly: System.Reflection.AssemblyProductAttribute("RaceDay.Contracts")]
 [assembly: System.Reflection.AssemblyTitleAttribute("RaceDay.Contracts")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
