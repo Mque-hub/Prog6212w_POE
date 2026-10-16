@@ -1,0 +1,72 @@
+name: RaceDay CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    env:
+      RACEDAY_TEST_CONNECTION: "Server=localhost,1433;Database=RaceDayTests;User Id=sa;Password=RaceDay_TestPass123!;TrustServerCertificate=True;Encrypt=True"
+
+    services:
+      sqlserver:
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        env:
+          ACCEPT_EULA: "Y"
+          MSSQL_SA_PASSWORD: "RaceDay_TestPass123!"
+        ports:
+          - 1433:1433
+        options: >-
+          --health-cmd "bash -c '</dev/tcp/localhost/1433'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 15
+          --health-start-period 30s
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore packages
+        working-directory: RaceDay
+        run: dotnet restore
+
+      - name: Build solution
+        working-directory: RaceDay
+        run: dotnet build --no-restore --configuration Release
+
+      - name: Apply database migrations
+        working-directory: RaceDay
+        shell: bash
+        run: |
+          dotnet tool install --global dotnet-ef --version 8.0.0
+          echo "$HOME/.dotnet/tools" >> "$GITHUB_PATH"
+          export PATH="$PATH:$HOME/.dotnet/tools"
+
+          for attempt in {1..12}; do
+            if dotnet ef database update \
+              --project RaceDay.Api/RaceDay.Api.csproj \
+              --startup-project RaceDay.Api/RaceDay.Api.csproj
+            then
+              echo "Database migrations applied successfully."
+              exit 0
+            fi
+
+            echo "Waiting for SQL Server; retry $attempt of 12..."
+            sleep 5
+          done
+
+          echo "Database migrations failed."
+          exit 1
+
+      - name: Run unit tests
+        working-directory: RaceDay
+        run: dotnet test --no-build --configuration Release --verbosity normal
