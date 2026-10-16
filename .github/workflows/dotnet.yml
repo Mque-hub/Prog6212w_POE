@@ -1,0 +1,49 @@
+name: RaceDay CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    services:
+      sqlserver:
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        env:
+          ACCEPT_EULA: "Y"
+          MSSQL_SA_PASSWORD: "RaceDay_TestPass123!"
+        ports:
+          - 1433:1433
+        options: >-
+          --health-cmd "/opt/mssql-tools18/bin/sqlcmd
+          -S localhost -U sa -P 'RaceDay_TestPass123!'
+          -C -Q 'SELECT 1' || exit 1"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+          --health-start-period 15s
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore packages
+        working-directory: RaceDay
+        run: dotnet restore
+
+      - name: Build solution
+        working-directory: RaceDay
+        run: dotnet build --no-restore --configuration Release
+
+      - name: Run unit tests
+        working-directory: RaceDay
+        env:
+          RACEDAY_TEST_CONNECTION: "Server=localhost,1433;Database=RaceDayTests;User Id=sa;Password=RaceDay_TestPass123!;TrustServerCertificate=True;Encrypt=True"
+        run: dotnet test --configuration Release --no-build --verbosity normal
