@@ -168,5 +168,46 @@ namespace RaceDay.Api.Controllers
                         "The email may already be registered.");
                 }
             }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login(LoginRequestDTO request)
+        {
+            if (string.IsNullOrWhiteSpace(request.Email) ||
+                string.IsNullOrWhiteSpace(request.Password))
+            {
+                return BadRequest("Email and password are required.");
+            }
+
+            var email = request.Email.Trim();
+
+            var account = await _context.Accounts
+                .FirstOrDefaultAsync(a => a.Email == email); // this will find the account matching the supplied email. 
+
+            if (account == null)
+            {
+                return Unauthorized("Invalid email or password."); //This should return HTTP 401 for invalid credentials.
+            }
+
+            var passwordHasher = new PasswordHasher<Account>();
+
+            var verificationResult = passwordHasher.VerifyHashedPassword(
+                account,
+                account.PasswordHash,
+                request.Password); // This checks the submitted password without storing or comparing plain-text passwords.
+
+            if (verificationResult == PasswordVerificationResult.Failed)
+            {
+                return Unauthorized("Invalid email or password.");
+            }
+
+            return Ok(new AuthResponse
+            {
+                UserID = account.AccountId,
+                AuthenticationRole = account.Role.ToString(),
+                Email = account.Email
+            });// This should return HTTP 200 and the AuthResponse for valid credentials.
         }
+    }
+
+
 }
