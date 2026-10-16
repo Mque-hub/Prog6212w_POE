@@ -39,9 +39,10 @@ namespace RaceDay.Api.Data
 
             // One Participant -> many Enrolments
             modelBuilder.Entity<Enrolment>()
-                .HasOne(e => e.Participant)
-                .WithMany(p => p.Enrolments)
-                .HasForeignKey(e => e.ParticipantId);
+                .HasOne(e => e.Account)
+                .WithMany(a => a.Enrolments)
+                .HasForeignKey(e => e.AccountID)
+                .OnDelete(DeleteBehavior.NoAction);
 
             // One Event -> many Enrolments
             modelBuilder.Entity<Enrolment>()
@@ -71,6 +72,11 @@ namespace RaceDay.Api.Data
             .HasMany(r => r.Awards)
             .WithOne(a => a.RaceResults)
             .HasForeignKey(a => a.RaceResultsID);
+
+            // Each account must have a unique email address
+            modelBuilder.Entity<Account>()
+                .HasIndex(a => a.Email)
+                .IsUnique();
         }
     }
 }
