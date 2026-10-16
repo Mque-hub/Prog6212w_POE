@@ -11,11 +11,12 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace RaceDay.Api.Controllers
 {
-    
-        [ApiController]
-        [Route("api/[controller]")]
-        public class AuthController : ControllerBase
-        {
+
+    [ApiController]
+    [Route("api/[controller]")]
+    [Tags("Authentication")]
+    public class AuthController : ControllerBase
+    {
             private readonly RaceDayDbContext _context;
             private readonly PasswordHasher<Account> _passwordHasher;
 
