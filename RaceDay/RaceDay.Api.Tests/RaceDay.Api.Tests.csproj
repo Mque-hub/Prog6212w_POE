@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -29,4 +29,7 @@
     <Using Include="Xunit" />
   </ItemGroup>
 
+    <ItemGroup>
+  <ProjectReference Include="..\RaceDay.Api\RaceDay.Api.csproj" />
+</ItemGroup>
 </Project>
