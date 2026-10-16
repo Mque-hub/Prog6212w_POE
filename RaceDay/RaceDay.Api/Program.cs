@@ -99,3 +99,5 @@ app.MapControllers();
 app.Run();
 
 public partial class Program { }
+
+// OpenAi was consulted for some ideas such as JWT Token and for debugging purposes
