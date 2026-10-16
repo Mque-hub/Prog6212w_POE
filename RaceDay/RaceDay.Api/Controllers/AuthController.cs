@@ -4,6 +4,10 @@ using Microsoft.EntityFrameworkCore;
 using RaceDay.Api.Data;
 using RaceDay.Contracts.DTOs;
 using RaceDay.Api.Models;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using Microsoft.IdentityModel.Tokens;
 
 namespace RaceDay.Api.Controllers
 {
@@ -200,12 +204,60 @@ namespace RaceDay.Api.Controllers
                 return Unauthorized("Invalid email or password.");
             }
 
-            return Ok(new AuthResponse
+            var jwtKey = HttpContext.RequestServices
+            .GetRequiredService<IConfiguration>()["Jwt:Key"];
+
+            var jwtIssuer = HttpContext.RequestServices
+                .GetRequiredService<IConfiguration>()["Jwt:Issuer"];
+
+            var jwtAudience = HttpContext.RequestServices
+                .GetRequiredService<IConfiguration>()["Jwt:Audience"];
+
+            var expiryMinutes = HttpContext.RequestServices
+                .GetRequiredService<IConfiguration>()
+                .GetValue<int>("Jwt:ExpiryMinutes");
+
+            if (string.IsNullOrWhiteSpace(jwtKey) ||
+                string.IsNullOrWhiteSpace(jwtIssuer) ||
+                string.IsNullOrWhiteSpace(jwtAudience))
             {
-                UserID = account.AccountId,
-                AuthenticationRole = account.Role.ToString(),
-                Email = account.Email
-            });// This should return HTTP 200 and the AuthResponse for valid credentials.
+                throw new InvalidOperationException(
+                    "JWT configuration is incomplete.");
+            }
+
+            var claims = new List<Claim>
+{
+            new Claim(ClaimTypes.NameIdentifier, account.AccountId.ToString()),
+            new Claim(ClaimTypes.Email, account.Email),
+            new Claim(ClaimTypes.Role, account.Role.ToString())
+};
+
+            var signingKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(jwtKey));
+
+            var credentials = new SigningCredentials(
+                signingKey,
+                SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                issuer: jwtIssuer,
+                audience: jwtAudience,
+                claims: claims,
+                expires: DateTime.UtcNow.AddMinutes(expiryMinutes),
+                signingCredentials: credentials);
+
+            var tokenString = new JwtSecurityTokenHandler()
+                .WriteToken(token);
+
+            return Ok(new
+            {
+                userID = account.AccountId,
+                authenticationRole = account.Role.ToString(),
+                email = account.Email,
+                accessToken = tokenString,
+                tokenType = "Bearer",
+                expiresInMinutes = expiryMinutes
+            });
         }
     }
 
