@@ -9,6 +9,5 @@ namespace RaceDay.Contracts.DTOs
     public class EnrolmentRequest
     {
         public int CategoryId { get; set; }
-        public string EnrolmentType { get; set; }
     }
 }

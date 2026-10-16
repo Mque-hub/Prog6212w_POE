@@ -8,9 +8,10 @@ namespace RaceDay.Contracts.DTOs
 {
     public class EnrolmentDto
     {
-        public int EnrolmentId {  get; set; }
+        public int EnrolmentId { get; set; }
         public int AccountId { get; set; }
-        public int CategoryId {  get; set; }
-        public string EnrolmentType { get; set; }
+        public int EventID { get; set; }
+        public int CategoryId { get; set; }
+        public DateTime EnrolmentDate { get; set; }
     }
 }
