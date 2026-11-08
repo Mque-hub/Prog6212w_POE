@@ -90,5 +90,33 @@ namespace RaceDay.Mvc.Controllers
 
             return RedirectToAction(nameof(Events));
         }
+        // GET: Displays categories belonging to a selected event
+        [HttpGet]
+        public async Task<IActionResult> Categories(int eventId)
+        {
+            if (!IsOrganiser())
+                return RedirectToAction("Login", "Auth");
+
+            if (eventId <= 0)
+                return BadRequest();
+
+            var response = await _api.SendAsync(
+                HttpMethod.Get,
+                $"api/events/{eventId}/categories");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                TempData["Error"] = "Could not retrieve event categories.";
+                return RedirectToAction(nameof(Events));
+            }
+
+            var categories =
+                await _api.ReadAsync<List<CategoryDto>>(response)
+                ?? new List<CategoryDto>();
+
+            ViewBag.EventId = eventId;
+
+            return View(categories);
+        }
     }
 }

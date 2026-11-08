@@ -1,0 +1,46 @@
+﻿@model List<RaceDay.Contracts.DTOs.CategoryDto>
+
+<h2>Event Categories</h2>
+
+<a asp-action="Events" class="btn btn-secondary">
+    Back to Events
+</a>
+
+<a asp-action="CreateCategory"
+   asp-route-eventId="@ViewBag.EventId"
+   class="btn btn-success">
+    Add Category
+</a>
+
+<table class="table mt-3">
+    <thead>
+        <tr>
+            <th>Category Name</th>
+            <th>Minimum Age</th>
+            <th>Maximum Age</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var category in Model)
+        {
+            <tr>
+                <td>@category.CategoryName</td>
+                <td>@category.MinAge</td>
+                <td>@category.MaxAge</td>
+                <td>
+                    <a asp-action="EditCategory"
+                       asp-route-id="@category.CategoryID">
+                        Edit
+                    </a>
+
+                    <a asp-action="DeleteCategory"
+                       asp-route-id="@category.CategoryID">
+                        Delete
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
