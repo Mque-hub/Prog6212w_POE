@@ -1,0 +1,44 @@
+﻿@model RaceDay.Contracts.DTOs.EventRequest
+
+<h1>Create Event</h1>
+
+<form asp-controller="Events" asp-action="CreateEvent" method="post">
+
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <label asp-for="EventName"></label>
+    <input asp-for="EventName" class="form-control" />
+    <span asp-validation-for="EventName" class="text-danger"></span>
+
+    <label asp-for="Description"></label>
+    <textarea asp-for="Description" class="form-control"></textarea>
+    <span asp-validation-for="Description" class="text-danger"></span>
+
+    <label asp-for="EventDate"></label>
+    <input asp-for="EventDate" type="date" class="form-control" />
+    <span asp-validation-for="EventDate" class="text-danger"></span>
+
+    <label asp-for="EventDuration"></label>
+    <input asp-for="EventDuration" class="form-control" />
+    <span asp-validation-for="EventDuration" class="text-danger"></span>
+
+    <label asp-for="Location"></label>
+    <input asp-for="Location" class="form-control" />
+    <span asp-validation-for="Location" class="text-danger"></span>
+
+    <label asp-for="Distance"></label>
+    <input asp-for="Distance" type="number" step="any" class="form-control" />
+    <span asp-validation-for="Distance" class="text-danger"></span>
+
+    <label asp-for="EventType"></label>
+    <select asp-for="EventType" class="form-select">
+        <option value="Run">Run</option>
+        <option value="Walk">Walk</option>
+        <option value="Cycle">Cycle</option>
+    </select>
+
+    <button class="btn btn-success mt-3" type="submit">
+        Create Event
+    </button>
+
+</form>
