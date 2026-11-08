@@ -1,23 +1,75 @@
-﻿@{
-    var role = Context.Session.GetString("Role");
-    var userId = Context.Session.GetInt32("UserId");
-}
-@if (userId == null)
-{
-    <a asp-controller="Auth" asp-action="Login">Login</a>
-    <a asp-controller="Auth" asp-action="Register">Register</a>
-}
-else if (role == "Organiser")
-{
-    <a asp-controller="Organiser" asp-action="Index">Dashboard</a>
-    <a asp-controller="Organiser" asp-action="Events">Events</a>
-    <a asp-controller="Organiser" asp-action="Enrolments">Enrolments</a>
-    <a asp-controller="Organiser" asp-action="Results">Results</a>
-}
-else
-{
-    <a asp-controller="Participant" asp-action="Index">Events</a>
-    <a asp-controller="Participant" asp-action="MyEvents">My Events</a>
-    <a asp-controller="Participant" asp-action="MyResults">My Results</a>
-    <a asp-controller="Participant" asp-action="Profile">Profile</a>
-}
+﻿```cshtml
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - RaceDay</title>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+
+<body>
+
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container">
+
+                <a class="navbar-brand" asp-controller="Home" asp-action="Index">
+                    RaceDay
+                </a>
+
+                <div class="navbar-nav">
+
+                    @{
+                        var role = Context.Session.GetString("Role");
+                        var userId = Context.Session.GetInt32("UserId");
+                    }
+
+                    @if (userId == null)
+                    {
+                        <a class="nav-link" asp-controller="Auth" asp-action="Login">Login</a>
+                        <a class="nav-link" asp-controller="Auth" asp-action="Register">Register</a>
+                    }
+                    else if (role == "Organiser")
+                    {
+                        <a class="nav-link" asp-controller="Organiser" asp-action="Index">Dashboard</a>
+                        <a class="nav-link" asp-controller="Organiser" asp-action="Events">Events</a>
+                        <a class="nav-link" asp-controller="Organiser" asp-action="Enrolments">Enrolments</a>
+                        <a class="nav-link" asp-controller="Organiser" asp-action="Results">Results</a>
+                    }
+                    else
+                    {
+                        <a class="nav-link" asp-controller="Participant" asp-action="Index">Events</a>
+                        <a class="nav-link" asp-controller="Participant" asp-action="MyEvents">My Events</a>
+                        <a class="nav-link" asp-controller="Participant" asp-action="MyResults">My Results</a>
+                        <a class="nav-link" asp-controller="Participant" asp-action="Profile">Profile</a>
+                    }
+
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container mt-4">
+        <main role="main">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted mt-5">
+        <div class="container">
+            &copy; @DateTime.Now.Year - RaceDay
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+
+</body>
+</html>
+```
