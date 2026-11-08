@@ -1,3 +1,5 @@
+using RaceDay.Mvc.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 // Session stores the MVC user's ID, name and role between page requests.
