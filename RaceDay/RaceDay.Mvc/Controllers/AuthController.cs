@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Azure;
+using Microsoft.AspNetCore.Identity.Data;
+using Microsoft.AspNetCore.Mvc;
 using RaceDay.Contracts;
 using RaceDay.Contracts.DTOs;
 using RaceDay.Mvc.Services;
@@ -54,31 +56,42 @@ public class AuthController : Controller
     [HttpPost]
     public async Task<IActionResult> Login(LoginVm vm)
     {
-        if (!ModelState.IsValid) return View(vm);
-        var response = await _api.SendAsync(HttpMethod.Post, "api/auth/login",
-            new LoginRequestDTO { Email = vm.Email, Password = vm.Password });
+        if (!ModelState.IsValid)
+            return View(vm);
+
+        var response = await _api.SendAsync(
+            HttpMethod.Post,
+            "api/auth/login",
+            new LoginRequest
+            {
+                Email = vm.Email,
+                Password = vm.Password
+            });
+
         if (!response.IsSuccessStatusCode)
         {
             ModelState.AddModelError("", "Invalid email or password.");
             return View(vm);
         }
+
         var auth = await _api.ReadAsync<AuthResponse>(response);
+
         if (auth == null)
         {
             ModelState.AddModelError("", "Login response could not be read.");
             return View(vm);
         }
-        string? apiCookie = RaceDayApiClient.ExtractSessionCookie(response);
-
-        if (!string.IsNullOrWhiteSpace(apiCookie))
-            HttpContext.Session.SetString("ApiSessionCookie", apiCookie);
 
         HttpContext.Session.SetInt32("UserId", auth.UserID);
         HttpContext.Session.SetString("Role", auth.AuthenticationRole);
         HttpContext.Session.SetString("DisplayName", auth.Email);
+        HttpContext.Session.SetString("AccessToken", auth.AccessToken);
 
-        if (auth.AuthenticationRole.Equals("Organiser", StringComparison.OrdinalIgnoreCase))
+        if (auth.AuthenticationRole.Equals(
+            "Organiser", StringComparison.OrdinalIgnoreCase))
+        {
             return RedirectToAction("Index", "Organiser");
+        }
 
         return RedirectToAction("Index", "Participant");
     }
