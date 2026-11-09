@@ -1,0 +1,46 @@
+﻿@model List<RaceDay.Contracts.DTOs.EnrolmentDto>
+
+@{
+    ViewData["Title"] = "My Events";
+}
+
+<h2>My Events</h2>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["Error"]
+    </div>
+}
+
+@if (Model != null && Model.Any())
+{
+    <table class="table table-bordered">
+
+        <thead>
+            <tr>
+                <th>Enrolment ID</th>
+                <th>Event ID</th>
+                <th>Category ID</th>
+                <th>Enrolment Date</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.EnrolmentId</td>
+                    <td>@item.EventID</td>
+                    <td>@item.CategoryId</td>
+                    <td>@item.EnrolmentDate</td>
+                </tr>
+            }
+        </tbody>
+
+    </table>
+}
+else
+{
+    <p>You have not entered any events yet.</p>
+}

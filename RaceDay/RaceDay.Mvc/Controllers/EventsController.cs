@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using RaceDay.Contracts.DTOs;
 using RaceDay.Mvc.Services;
 using RaceDay.Mvc.ViewModels;
+using RaceDay.Mvc.Views;
 
 namespace RaceDay.Mvc.Controllers
 {
@@ -21,6 +22,14 @@ namespace RaceDay.Mvc.Controllers
             return string.Equals(
                 HttpContext.Session.GetString("Role"),
                 "Organiser",
+                StringComparison.OrdinalIgnoreCase);
+        }
+
+        private bool IsParticipant()
+        {
+            return string.Equals(
+                HttpContext.Session.GetString("Role"),
+                "Participant",
                 StringComparison.OrdinalIgnoreCase);
         }
 
@@ -51,6 +60,30 @@ namespace RaceDay.Mvc.Controllers
             return View(events);
         }
 
+        // GET: Displays all available events to Participants
+        [HttpGet]
+        public async Task<IActionResult> ParticipantEvents()
+        {
+            if (!IsParticipant())
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
+            var response = await _api.SendAsync(
+                HttpMethod.Get,
+                "api/events");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                TempData["Error"] = "Could not retrieve available events.";
+                return View("ParticipantEvents", new List<EventDto>());
+            }
+
+            var events = await _api.ReadAsync<List<EventDto>>(response)
+                         ?? new List<EventDto>();
+
+            return View("ParticipantEvents", events);
+        }
         // GET: Displays the Create Event form
         [HttpGet]
         public IActionResult CreateEvent()
@@ -118,5 +151,133 @@ namespace RaceDay.Mvc.Controllers
 
             return View(categories);
         }
+
+        // GET: Displays participants enrolled in a selected event
+        [HttpGet]
+        public async Task<IActionResult> Participants(int eventId)
+        {
+            if (!IsOrganiser())
+                return RedirectToAction("Login", "Auth");
+
+            if (eventId <= 0)
+                return BadRequest();
+
+            // Call the API to retrieve event participants
+            var response = await _api.SendAsync(
+                HttpMethod.Get,
+                $"api/events/{eventId}/participants");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                TempData["Error"] = "Could not retrieve event participants.";
+                return RedirectToAction(nameof(Events));
+            }
+
+            // Read the API response
+            var participants =
+                await _api.ReadAsync<List<EventParticipantDto>>(response)
+                ?? new List<EventParticipantDto>();
+
+            // Convert DTOs into MVC ViewModels
+            var model = participants.Select(p => new EventParticipantViewModel
+            {
+                ParticipantName = p.ParticipantName,
+                CategoryName = p.CategoryName,
+                EnrolmentDate = p.EnrolmentDate,
+                Status = null
+            }).ToList();
+
+            return View(model);
+        }
+        // GET: Displays events entered by the participant
+        [HttpGet]
+        public async Task<IActionResult> MyEvents()
+        {
+            if (!IsParticipant())
+                return RedirectToAction("Login", "Auth");
+
+            var response = await _api.SendAsync(
+                HttpMethod.Get,
+                "api/enrolments/my");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                TempData["Error"] = "Could not retrieve your events.";
+                return View(new List<EnrolmentDto>());
+            }
+
+            var enrolments =
+                await _api.ReadAsync<List<EnrolmentDto>>(response)
+                ?? new List<EnrolmentDto>();
+
+            return View(enrolments);
+        }
+        // GET: Displays full event details and available categories
+        [HttpGet]
+        public async Task<IActionResult> Details(int id)
+        {
+            if (!IsParticipant())
+                return RedirectToAction("Login", "Auth");
+
+            // Retrieve event details
+            var eventResponse = await _api.SendAsync(
+                HttpMethod.Get,
+                $"api/events/{id}");
+
+            if (!eventResponse.IsSuccessStatusCode)
+                return NotFound();
+
+            var eventDetails =
+                await _api.ReadAsync<EventDto>(eventResponse);
+
+            // Retrieve available categories
+            var categoryResponse = await _api.SendAsync(
+                HttpMethod.Get,
+                $"api/events/{id}/categories");
+
+            if (!categoryResponse.IsSuccessStatusCode)
+                return NotFound();
+
+            var categories =
+                await _api.ReadAsync<List<CategoryDto>>(categoryResponse)
+                ?? new List<CategoryDto>();
+
+            ViewBag.Categories = categories;
+
+            return View(eventDetails);
+        }
+        // POST: Allows a participant to enter an event
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EnterEvent(int eventId, int categoryId)
+        {
+            if (!IsParticipant())
+                return RedirectToAction("Login", "Auth");
+
+            var request = new EnrolmentRequest
+            {
+                CategoryId = categoryId
+            };
+
+            var response = await _api.SendAsync(
+                HttpMethod.Post,
+                $"api/events/{eventId}/enrolments",
+                request
+            );
+
+            if (!response.IsSuccessStatusCode)
+            {
+                TempData["Error"] = await response.Content.ReadAsStringAsync();
+
+                return RedirectToAction(nameof(Details),
+                    new { id = eventId });
+            }
+
+            TempData["Success"] = "You have entered the event successfully.";
+
+            return RedirectToAction(nameof(MyEvents));
+
+        }
+
     }
 }

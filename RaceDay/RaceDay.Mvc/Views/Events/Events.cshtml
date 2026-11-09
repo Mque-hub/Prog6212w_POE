@@ -1,5 +1,92 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model List<RaceDay.Contracts.DTOs.EventDto>
+
 @{
+    ViewData["Title"] = "My Events";
 }
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2>My Events</h2>
+            <p class="text-muted">
+                Manage your events and view enrolled participants.
+            </p>
+        </div>
+
+        <a asp-controller="Events"
+           asp-action="CreateEvent"
+           class="btn btn-success">
+            + Create Event
+        </a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["Success"]
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["Error"]
+        </div>
+    }
+
+    @if (Model == null || !Model.Any())
+    {
+        <div class="alert alert-info">
+            You have not created any events yet.
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+
+            <table class="table table-striped table-hover">
+
+                <thead class="table-dark">
+                    <tr>
+                        <th>Event Name</th>
+                        <th>Event Type</th>
+                        <th>Date</th>
+                        <th>Location</th>
+                        <th>Distance</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.EventName</td>
+
+                            <td>@item.EventType</td>
+
+                            <td>@item.EventDate</td>
+
+                            <td>@item.Location</td>
+
+                            <td>@item.Distance</td>
+
+                            <td>
+                                <a asp-controller="Events"
+                                   asp-action="Participants"
+                                   asp-route-eventId="@item.EventID"
+                                   class="btn btn-primary btn-sm">
+                                    View Participants
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+
+            </table>
+
+        </div>
+    }
+
+</div>

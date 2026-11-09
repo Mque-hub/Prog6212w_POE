@@ -1,8 +1,115 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model IEnumerable<RaceDay.Contracts.DTOs.EventDto>
+
+@{
+    ViewData["Title"] = "Participant Home";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container mt-4">
+
+    <h2 class="mb-2">Welcome, Participant!</h2>
+    <p class="text-muted">
+        Explore upcoming events and find one that interests you.
+    </p>
+
+    <hr />
+
+    <h4 class="mb-3">Upcoming Events</h4>
+
+    <!-- Search and filter form -->
+    <form asp-controller="Participant"
+          asp-action="Index"
+          method="get"
+          class="row g-3 mb-4">
+
+        <div class="col-md-4">
+            <input type="text"
+                   name="search"
+                   class="form-control"
+                   placeholder="Search by event name or location"
+                   value="@Context.Request.Query["search"]" />
+        </div>
+
+        <div class="col-md-4">
+            <select name="type" class="form-select">
+                <option value="">All Event Types</option>
+                <option value="Run">Run</option>
+                <option value="Walk">Walk</option>
+                <option value="Cycle">Cycle</option>
+            </select>
+        </div>
+
+        <div class="col-md-4">
+            <button type="submit" class="btn btn-primary">
+                Search Events
+            </button>
+
+            <a asp-controller="Participant"
+               asp-action="Index"
+               class="btn btn-secondary">
+                Clear Filters
+            </a>
+        </div>
+
+    </form>
+
+    <!-- Display events -->
+    <div class="row">
+
+        @if (Model != null && Model.Any())
+        {
+            foreach (var item in Model)
+            {
+                <div class="col-md-4 mb-4">
+
+                    <div class="card h-100 shadow-sm">
+
+                        <div class="card-body">
+
+                            <h5 class="card-title">
+                                @item.EventName
+                            </h5>
+
+                            <p class="card-text">
+                                <strong>Event Type:</strong>
+                                @item.EventType
+                            </p>
+
+                            <p class="card-text">
+                                <strong>Date:</strong>
+                                @item.EventDate.ToString("dd MMMM yyyy")
+                            </p>
+
+                            <p class="card-text">
+                                <strong>Location:</strong>
+                                @item.Location
+                            </p>
+
+                            <p class="card-text">
+                                <strong>Distance:</strong>
+                                @item.Distance
+                            </p>
+
+                            <p class="card-text">
+                                @item.Description
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12">
+                <div class="alert alert-info">
+                    No upcoming events found.
+                    Try changing your search or filters.
+                </div>
+            </div>
+        }
+
+    </div>
+
 </div>

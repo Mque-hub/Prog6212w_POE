@@ -9,6 +9,7 @@ namespace RaceDay.Contracts.DTOs
     public class EventDto
     {
         public int OrganiserID { get; set; }
+        public int EventID { get; set; }
         public string EventName { get; set; }
         public string Description { get; set; }
         public string EventType { get; set; }

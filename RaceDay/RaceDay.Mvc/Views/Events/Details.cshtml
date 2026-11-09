@@ -1,0 +1,81 @@
+﻿@model RaceDay.Contracts.DTOs.EventDto
+
+@{
+    ViewData["Title"] = "Event Details";
+
+    var categories = ViewBag.Categories
+        as List<RaceDay.Contracts.DTOs.CategoryDto>;
+}
+
+<h2>Event Details</h2>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["Error"]
+    </div>
+}
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["Success"]
+    </div>
+}
+
+<div class="card p-4">
+
+    <h3>@Model.EventName</h3>
+
+    <p><strong>Description:</strong> @Model.Description</p>
+    <p><strong>Event Type:</strong> @Model.EventType</p>
+    <p><strong>Date:</strong> @Model.EventDate</p>
+    <p><strong>Duration:</strong> @Model.EventDuration</p>
+    <p><strong>Location:</strong> @Model.Location</p>
+    <p><strong>Distance:</strong> @Model.Distance</p>
+
+    <hr />
+
+    <h4>Available Categories</h4>
+
+    @if (categories != null && categories.Any())
+    {
+        <form asp-action="EnterEvent" method="post">
+
+            @Html.AntiForgeryToken()
+
+            <input type="hidden"
+                   name="eventId"
+                   value="@Model.EventID" />
+
+            <label>Select your category:</label>
+
+            <select name="categoryId"
+                    class="form-select"
+                    required>
+
+                <option value="">Choose a category</option>
+
+                @foreach (var category in categories)
+                {
+                    <option value="@category.CategoryID">
+                        @category.CategoryName
+                        (Age: @category.MinAge - @category.MaxAge)
+                    </option>
+                }
+
+            </select>
+
+            <button type="submit"
+                    class="btn btn-success mt-3">
+                Enter Event
+            </button>
+
+        </form>
+    }
+    else
+    {
+        <p>No categories are currently available.</p>
+    }
+
+</div>

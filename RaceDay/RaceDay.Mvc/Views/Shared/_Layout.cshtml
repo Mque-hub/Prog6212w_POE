@@ -39,12 +39,31 @@
                         <a class="nav-link" asp-controller="Organiser" asp-action="Enrolments">Enrolments</a>
                         <a class="nav-link" asp-controller="Organiser" asp-action="Results">Results</a>
                     }
-                    else
+                    else if (role == "Participant")
                     {
-                        <a class="nav-link" asp-controller="Participant" asp-action="Index">Events</a>
-                        <a class="nav-link" asp-controller="Participant" asp-action="MyEvents">My Events</a>
-                        <a class="nav-link" asp-controller="Participant" asp-action="MyResults">My Results</a>
-                        <a class="nav-link" asp-controller="Participant" asp-action="Profile">Profile</a>
+                        <a class="nav-link"
+                           asp-controller="Events"
+                           asp-action="ParticipantEvents">
+                            Available Events
+                        </a>
+
+                        <a class="nav-link"
+                           asp-controller="Events"
+                           asp-action="MyEvents">
+                            My Events
+                        </a>
+
+                        <a class="nav-link"
+                           asp-controller="Participant"
+                           asp-action="MyResults">
+                            My Results
+                        </a>
+
+                        <a class="nav-link"
+                           asp-controller="Participant"
+                           asp-action="Profile">
+                            Profile
+                        </a>
                     }
 
                 </div>

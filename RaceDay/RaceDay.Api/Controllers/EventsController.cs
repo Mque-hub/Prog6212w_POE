@@ -33,6 +33,7 @@ namespace RaceDay.Api.Controllers
 
                 var result = events.Select(e => new EventDto
                 {
+                    EventID = e.EventID,
                     OrganiserID = e.OrganiserID,
                     EventName = e.EventName,
                     Description = e.Description,
@@ -60,6 +61,7 @@ namespace RaceDay.Api.Controllers
 
                 var result = new EventDto
                 {
+                    EventID = e.EventID,
                     OrganiserID = e.OrganiserID,
                     EventName = e.EventName,
                     Description = e.Description,
@@ -93,6 +95,7 @@ namespace RaceDay.Api.Controllers
 
                 var newEvent = new Event
                 {
+                    
                     OrganiserID = account.OrganiserId.Value,
                     EventName = request.EventName,
                     Description = request.Description,
@@ -195,7 +198,66 @@ namespace RaceDay.Api.Controllers
 
                 return NoContent();
             }
+        // GET: api/events/1/participants
+        [HttpGet("{id:int}/participants")]
+        [Authorize(Roles = nameof(Role.Organiser))]
+        public async Task<ActionResult<IEnumerable<EventParticipantDto>>>
+            GetEventParticipants(int id)
+        {
+            // 1. Retrieve the logged-in organiser's AccountID
+            var accountIdValue = User.FindFirstValue(
+                ClaimTypes.NameIdentifier);
+
+            if (!int.TryParse(accountIdValue, out var accountId))
+                return Unauthorized();
+
+            // 2. Find the organiser's account
+            var account = await _context.Accounts
+                .FirstOrDefaultAsync(a => a.AccountId == accountId);
+
+            if (account?.OrganiserId == null)
+                return Forbid();
+
+            // 3. Check whether this event belongs to the organiser
+            var existingEvent = await _context.Events
+                .FirstOrDefaultAsync(e =>
+                    e.EventID == id &&
+                    e.OrganiserID == account.OrganiserId.Value);
+
+            if (existingEvent == null)
+                return NotFound();
+
+            // 4. Retrieve participants and their selected categories
+            var participants = await (
+                from enrolment in _context.Enrolments
+
+                join participantAccount in _context.Accounts
+                    on enrolment.AccountID equals participantAccount.AccountId
+
+                join participant in _context.Participants
+                    on participantAccount.ParticipantId
+                    equals (int?)participant.ParticipantId
+
+                join category in _context.Categories
+                    on enrolment.CategoryId equals category.CategoryID
+
+                where enrolment.EventID == id
+
+                select new EventParticipantDto
+                {
+                    ParticipantName = participant.FirstName + " " +
+                                      participant.LastName,
+
+                    CategoryName = category.CategoryName,
+
+                    EnrolmentDate = enrolment.EnrolmentDate
+                }
+            ).AsNoTracking().ToListAsync();
+
+            // 5. Return the participants
+            return Ok(participants);
         }
+    }
     
 }
 
