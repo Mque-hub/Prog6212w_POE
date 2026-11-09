@@ -97,7 +97,8 @@ namespace RaceDay.Mvc.Controllers
         // POST: Sends the new event to the API
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateEvent(EventRequest model)
+        public async Task<IActionResult> CreateEvent(
+    EventRequest model, IFormFile? banner)
         {
             if (!IsOrganiser())
                 return RedirectToAction("Login", "Auth");
@@ -106,9 +107,9 @@ namespace RaceDay.Mvc.Controllers
                 return View(model);
 
             var response = await _api.SendAsync(
-                HttpMethod.Post,
-                "api/events",
-                model);
+    HttpMethod.Post,
+    "api/events",
+    model);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -117,6 +118,36 @@ namespace RaceDay.Mvc.Controllers
                     await response.Content.ReadAsStringAsync());
 
                 return View(model);
+            }
+
+            // Read the newly created event
+            var createdEvent =
+                await _api.ReadAsync<EventDto>(response);
+
+            if (createdEvent == null)
+            {
+                ModelState.AddModelError(
+                    "",
+                    "Event was created, but its details could not be retrieved.");
+
+                return View(model);
+            }
+
+            // Upload banner if one was selected
+            if (banner != null && banner.Length > 0)
+            {
+                var uploadResponse = await _api.UploadFileAsync(
+                    $"api/events/{createdEvent.EventID}/banner",
+                    banner);
+
+                if (!uploadResponse.IsSuccessStatusCode)
+                {
+                    TempData["Error"] =
+                        "Event created, but banner upload failed: " +
+                        await uploadResponse.Content.ReadAsStringAsync();
+
+                    return RedirectToAction(nameof(Events));
+                }
             }
 
             TempData["Success"] = "Event created successfully.";

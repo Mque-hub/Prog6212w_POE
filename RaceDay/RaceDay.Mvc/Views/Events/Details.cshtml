@@ -27,11 +27,27 @@
 
     <h3>@Model.EventName</h3>
 
+    @* Display event banner if one has been uploaded *@
+    @if (!string.IsNullOrEmpty(Model.BannerImageUrl))
+    {
+        <div class="mb-4">
+            <img src="@Model.BannerImageUrl"
+                 alt="Banner for @Model.EventName"
+                 class="img-fluid rounded"
+                 style="width: 100%; max-height: 350px; object-fit: cover;" />
+        </div>
+    }
+
     <p><strong>Description:</strong> @Model.Description</p>
+
     <p><strong>Event Type:</strong> @Model.EventType</p>
+
     <p><strong>Date:</strong> @Model.EventDate</p>
+
     <p><strong>Duration:</strong> @Model.EventDuration</p>
+
     <p><strong>Location:</strong> @Model.Location</p>
+
     <p><strong>Distance:</strong> @Model.Distance</p>
 
     <hr />

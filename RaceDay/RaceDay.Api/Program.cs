@@ -80,6 +80,7 @@ builder.Services
     });
 
 builder.Services.AddAuthorization();
+builder.Services.AddScoped<BlobStorageService>();
 
 var app = builder.Build();
 
@@ -89,7 +90,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-builder.Services.AddScoped<BlobStorageService>();
+
 
 app.UseHttpsRedirection();
 

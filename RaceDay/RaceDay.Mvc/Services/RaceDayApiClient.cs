@@ -38,6 +38,29 @@ public class RaceDayApiClient
             request.Content = JsonContent.Create(body);
         return await client.SendAsync(request);
     }
+
+    public async Task<HttpResponseMessage> UploadFileAsync(
+    string url,
+    IFormFile file)
+    {
+        var client = CreateClient();
+
+        using var request = CreateRequest(HttpMethod.Post, url);
+        using var form = new MultipartFormDataContent();
+        using var stream = file.OpenReadStream();
+
+        var fileContent = new StreamContent(stream);
+
+        fileContent.Headers.ContentType =
+            new System.Net.Http.Headers.MediaTypeHeaderValue(
+                file.ContentType);
+
+        form.Add(fileContent, "file", file.FileName);
+
+        request.Content = form;
+
+        return await client.SendAsync(request);
+    }
     public async Task<T?> ReadAsync<T>(HttpResponseMessage response)
     {
         if (!response.IsSuccessStatusCode) return default;

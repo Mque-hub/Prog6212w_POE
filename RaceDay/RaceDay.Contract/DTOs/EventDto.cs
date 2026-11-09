@@ -17,6 +17,6 @@ namespace RaceDay.Contracts.DTOs
         public TimeSpan EventDuration { get; set; }
         public string Location { get; set; }
         public string Distance { get; set; }
-
+        public string? BannerImageUrl { get; set; }
     }
 }

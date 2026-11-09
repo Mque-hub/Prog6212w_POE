@@ -42,7 +42,8 @@ namespace RaceDay.Api.Controllers
                     EventDate = e.EventDate,
                     EventDuration = e.EventDuration,
                     Location = e.Location,
-                    Distance = e.Distance
+                    Distance = e.Distance,
+                    BannerImageUrl = e.BannerImageUrl
                 }).ToList();
 
                 return Ok(result);
@@ -70,7 +71,8 @@ namespace RaceDay.Api.Controllers
                     EventDate = e.EventDate,
                     EventDuration = e.EventDuration,
                     Location = e.Location,
-                    Distance = e.Distance
+                    Distance = e.Distance,
+                    BannerImageUrl = e.BannerImageUrl
                 };
 
                 return Ok(result);
@@ -111,19 +113,21 @@ namespace RaceDay.Api.Controllers
                 _context.Events.Add(newEvent);
                 await _context.SaveChangesAsync();
 
-                var result = new EventDto
-                {
-                    OrganiserID = newEvent.OrganiserID,
-                    EventName = newEvent.EventName,
-                    Description = newEvent.Description,
-                    EventType = newEvent.EventType,
-                    EventDate = newEvent.EventDate,
-                    EventDuration = newEvent.EventDuration,
-                    Location = newEvent.Location,
-                    Distance = newEvent.Distance
-                };
+                    var result = new EventDto
+                    {
+                        EventID = newEvent.EventID,
+                        OrganiserID = newEvent.OrganiserID,
+                        EventName = newEvent.EventName,
+                        Description = newEvent.Description,
+                        EventType = newEvent.EventType,
+                        EventDate = newEvent.EventDate,
+                        EventDuration = newEvent.EventDuration,
+                        Location = newEvent.Location,
+                        Distance = newEvent.Distance,
+                        BannerImageUrl = newEvent.BannerImageUrl
+                    };
 
-                return CreatedAtAction(
+            return CreatedAtAction(
                     nameof(GetEventById),
                     new { id = newEvent.EventID },
                     result); // returns 201 Created when an event is successfully created.

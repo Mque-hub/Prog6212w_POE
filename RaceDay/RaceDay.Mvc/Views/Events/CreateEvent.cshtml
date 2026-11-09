@@ -2,7 +2,7 @@
 
 <h1>Create Event</h1>
 
-<form asp-controller="Events" asp-action="CreateEvent" method="post">
+<form asp-controller="Events" asp-action="CreateEvent" method="post" enctype="multipart/form-data">
 
     <div asp-validation-summary="All" class="text-danger"></div>
 
@@ -36,6 +36,15 @@
         <option value="Walk">Walk</option>
         <option value="Cycle">Cycle</option>
     </select>
+
+    <!-- NEW: Event banner upload -->
+    <div class="mb-3 mt-3">
+        <label class="form-label">Event Banner</label>
+        <input type="file"
+               name="banner"
+               class="form-control"
+               accept="image/*" />
+    </div>
 
     <button class="btn btn-success mt-3" type="submit">
         Create Event
