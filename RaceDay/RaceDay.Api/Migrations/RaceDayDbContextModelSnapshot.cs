@@ -230,6 +230,9 @@ namespace RaceDay.Api.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ProfilePictureUrl")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("ParticipantId");
 
                     b.ToTable("Participants");

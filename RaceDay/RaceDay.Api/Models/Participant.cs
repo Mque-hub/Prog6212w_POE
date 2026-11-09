@@ -11,5 +11,6 @@
         public string CellNumber { get; set; }
 
         public string Address { get; set; }
+        public string? ProfilePictureUrl { get; set; }
     }
 }
