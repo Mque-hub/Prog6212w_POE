@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RaceDay.Api.Data;
 using RaceDay.Api.Models;
+using RaceDay.Api.Services;
 using RaceDay.Contracts;
 using RaceDay.Contracts.DTOs;
 using System.Globalization;
@@ -126,6 +127,7 @@ namespace RaceDay.Api.Controllers
                     nameof(GetEventById),
                     new { id = newEvent.EventID },
                     result); // returns 201 Created when an event is successfully created.
+
         }
 
             // PUT: api/events/1
@@ -256,8 +258,58 @@ namespace RaceDay.Api.Controllers
 
             // 5. Return the participants
             return Ok(participants);
+
         }
+
+        // POST: api/events/1/banner
+        [HttpPost("{id:int}/banner")]
+        [Authorize(Roles = nameof(Role.Organiser))]
+        public async Task<IActionResult> UploadBanner(
+            int id,
+            [FromForm] IFormFile file,
+            [FromServices] BlobStorageService blobStorage)
+        {
+            // 1. Get the logged-in organiser's AccountID
+            var accountIdValue = User.FindFirstValue(
+                ClaimTypes.NameIdentifier);
+
+            if (!int.TryParse(accountIdValue, out var accountId))
+                return Unauthorized();
+
+            // 2. Find the organiser's account
+            var account = await _context.Accounts
+                .FirstOrDefaultAsync(a => a.AccountId == accountId);
+
+            if (account?.OrganiserId == null)
+                return Forbid();
+
+            // 3. Check that the event belongs to this organiser
+            var existingEvent = await _context.Events
+                .FirstOrDefaultAsync(e =>
+                    e.EventID == id &&
+                    e.OrganiserID == account.OrganiserId.Value);
+
+            if (existingEvent == null)
+                return NotFound("Event not found.");
+
+            // 4. Validate the uploaded image
+            if (file == null || file.Length == 0)
+                return BadRequest("Please select an image.");
+
+            // 5. Upload image to Azure Blob Storage
+            string url = await blobStorage.UploadAsync(
+                file, "event-banners");
+
+            // 6. Save the image URL against the event
+            existingEvent.BannerImageUrl = url;
+
+            await _context.SaveChangesAsync();
+
+            // 7. Return the image URL
+            return Ok(new { imageUrl = url });
+        }
+
     }
-    
+
 }
 

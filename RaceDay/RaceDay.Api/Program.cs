@@ -1,10 +1,11 @@
-using Microsoft.EntityFrameworkCore;
-using RaceDay.Api.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
 using Microsoft.OpenApi.Models;
+using RaceDay.Api.Data;
+using RaceDay.Api.Services;
 using System;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -88,6 +89,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+builder.Services.AddScoped<BlobStorageService>();
 
 app.UseHttpsRedirection();
 

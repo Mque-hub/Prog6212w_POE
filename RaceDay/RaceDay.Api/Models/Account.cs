@@ -15,5 +15,7 @@
         public string PasswordHash { get; set; } = string.Empty;
         public ICollection<Enrolment> Enrolments { get; set; }
     = new List<Enrolment>();
+
+        public string? ProfileImageUrl { get; set; }
     }
 }

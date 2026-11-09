@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RaceDay.Api.Data;
 using RaceDay.Api.Models;
+using RaceDay.Api.Services;
 using RaceDay.Contracts.DTOs;
 using System.Security.Claims;
 
@@ -152,7 +153,61 @@ namespace RaceDay.Api.Controllers
 
             return NoContent();
         }
+        // POST: api/profiles/me/participant/profile-picture
+        [HttpPost("me/participant/profile-picture")]
+        [Authorize(Roles = nameof(Role.Participant))]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> UploadProfilePicture(
+            [FromForm] IFormFile file,
+            [FromServices] BlobStorageService blobStorage)
+        {
+            
+            var account = await GetCurrentAccountAsync();
 
+            if (account == null)
+                return Unauthorized();
+
+           
+            if (account.ParticipantId == null)
+                return NotFound("Participant profile not found.");
+
+            
+            var participant = await _context.Participants
+                .FirstOrDefaultAsync(p =>
+                    p.ParticipantId == account.ParticipantId.Value);
+
+            if (participant == null)
+                return NotFound("Participant profile not found.");
+
+            
+            if (file == null || file.Length == 0)
+                return BadRequest("Please select an image.");
+
+            var allowedTypes = new[]
+            {
+        "image/jpeg",
+        "image/png",
+        "image/webp"
+    };
+
+            if (!allowedTypes.Contains(file.ContentType.ToLowerInvariant()))
+                return BadRequest("Only JPG, PNG and WEBP images are allowed.");
+
+            if (file.Length > 5 * 1024 * 1024)
+                return BadRequest("Image size must not exceed 5 MB.");
+
+            
+            string url = await blobStorage.UploadAsync(
+                file, "participant-profiles");
+
+            
+            participant.ProfilePictureUrl = url;
+
+            await _context.SaveChangesAsync();
+
+            
+            return Ok(new { imageUrl = url });
+        }
         private async Task<Account?> GetCurrentAccountAsync()
         {
             var value = User.FindFirstValue(
