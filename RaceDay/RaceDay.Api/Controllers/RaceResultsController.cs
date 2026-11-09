@@ -173,6 +173,7 @@ namespace RaceDay.Api.Controllers
         }
 
         // GET: api/results/my
+        // GET: api/results/my
         [HttpGet("results/my")]
         [Authorize(Roles = nameof(Role.Participant))]
         public async Task<ActionResult<IEnumerable<ResultDto>>>
@@ -189,12 +190,18 @@ namespace RaceDay.Api.Controllers
                 .Select(r => new ResultDto
                 {
                     EnrolmentID = r.EnrolmentID,
+
                     FinishTime = r.FinishTime,
                     FinishPosition = r.FinishPosition,
                     PerformanceDetails = r.PerformanceDetails,
+
                     Awards = r.Awards
-                    .Select(a => a.AwardsDetails)
-                    .ToList()
+                        .Select(a => a.AwardsDetails)
+                        .ToList(),
+
+                    EventName = r.Enrolment.Event.EventName,
+                    EventDate = r.Enrolment.Event.EventDate,
+                    CategoryName = r.Enrolment.Category.CategoryName
                 })
                 .ToListAsync();
 

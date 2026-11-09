@@ -33,12 +33,7 @@ namespace RaceDay.Mvc.Controllers
                 StringComparison.OrdinalIgnoreCase);
         }
 
-        private readonly IHttpClientFactory _httpClientFactory;
-
-        public ParticipantController(IHttpClientFactory httpClientFactory)
-        {
-            _httpClientFactory = httpClientFactory;
-        }
+       
         // Participant home page
         public async Task<IActionResult> Index(string? type, string? search)
         {
@@ -82,35 +77,13 @@ namespace RaceDay.Mvc.Controllers
         }
         public async Task<IActionResult> MyEnrolments()
         {
-            // Check whether a participant is logged in
-            var userId = HttpContext.Session.GetInt32("UserId");
-
-            if (userId == null)
+            if (!IsParticipant())
                 return RedirectToAction("Login", "Auth");
 
-            // Connect to the existing API
-            var client = _httpClientFactory.CreateClient("RaceDayApi");
+            var response = await _api.SendAsync(
+                HttpMethod.Get, "api/enrolments/my");
 
-            // Forward the participant's authentication cookie
-            var cookie = Request.Headers.Cookie.ToString();
-
-            if (!string.IsNullOrEmpty(cookie))
-            {
-                client.DefaultRequestHeaders.TryAddWithoutValidation(
-                    "Cookie", cookie);
-            }
-
-            // Call the Part 2 API endpoint
-            var response = await client.GetAsync("api/enrolments/my");
-
-            if (!response.IsSuccessStatusCode)
-            {
-                return View(new MyEnrolmentsVm());
-            }
-
-            // Convert the API response into DTO objects
-            var enrolments = await response.Content
-                .ReadFromJsonAsync<List<EnrolmentDto>>();
+            var enrolments = await _api.ReadAsync<List<EnrolmentDto>>(response);
 
             var model = new MyEnrolmentsVm
             {
@@ -119,6 +92,25 @@ namespace RaceDay.Mvc.Controllers
 
             return View(model);
         }
-        
+
+        public async Task<IActionResult> MyResults()
+        {
+            if (!IsParticipant())
+                return RedirectToAction("Login", "Auth");
+
+            var response = await _api.SendAsync(
+                HttpMethod.Get, "api/results/my");
+
+            var results = await _api.ReadAsync<List<ResultDto>>(response);
+
+            var model = new ResultsVm
+            {
+                Results = results ?? new List<ResultDto>()
+            };
+
+            return View(model);
+        }
+
+
     }
 }
