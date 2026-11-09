@@ -13,5 +13,10 @@ namespace RaceDay.Contracts.DTOs
         public int EventID { get; set; }
         public int CategoryId { get; set; }
         public DateTime EnrolmentDate { get; set; }
+
+        // Additional information for displaying enrolments
+        public string EventName { get; set; } = string.Empty;
+        public string CategoryName { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
     }
 }

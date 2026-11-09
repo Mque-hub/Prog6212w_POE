@@ -1,4 +1,5 @@
-﻿
+﻿using System.Net.Http.Json;
+using RaceDay.Mvc.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RaceDay.Contracts.DTOs;
@@ -32,6 +33,12 @@ namespace RaceDay.Mvc.Controllers
                 StringComparison.OrdinalIgnoreCase);
         }
 
+        private readonly IHttpClientFactory _httpClientFactory;
+
+        public ParticipantController(IHttpClientFactory httpClientFactory)
+        {
+            _httpClientFactory = httpClientFactory;
+        }
         // Participant home page
         public async Task<IActionResult> Index(string? type, string? search)
         {
@@ -73,5 +80,45 @@ namespace RaceDay.Mvc.Controllers
 
             return View(events);
         }
+        public async Task<IActionResult> MyEnrolments()
+        {
+            // Check whether a participant is logged in
+            var userId = HttpContext.Session.GetInt32("UserId");
+
+            if (userId == null)
+                return RedirectToAction("Login", "Auth");
+
+            // Connect to the existing API
+            var client = _httpClientFactory.CreateClient("RaceDayApi");
+
+            // Forward the participant's authentication cookie
+            var cookie = Request.Headers.Cookie.ToString();
+
+            if (!string.IsNullOrEmpty(cookie))
+            {
+                client.DefaultRequestHeaders.TryAddWithoutValidation(
+                    "Cookie", cookie);
+            }
+
+            // Call the Part 2 API endpoint
+            var response = await client.GetAsync("api/enrolments/my");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return View(new MyEnrolmentsVm());
+            }
+
+            // Convert the API response into DTO objects
+            var enrolments = await response.Content
+                .ReadFromJsonAsync<List<EnrolmentDto>>();
+
+            var model = new MyEnrolmentsVm
+            {
+                Enrolments = enrolments ?? new List<EnrolmentDto>()
+            };
+
+            return View(model);
+        }
+        
     }
 }

@@ -84,7 +84,7 @@ namespace RaceDay.Api.Controllers
         [HttpGet("enrolments/my")]
         [Authorize(Roles = nameof(Role.Participant))]
         public async Task<ActionResult<IEnumerable<EnrolmentDto>>>
-            GetMyEnrolments()
+    GetMyEnrolments()
         {
             var accountId = GetAccountId();
 
@@ -100,7 +100,12 @@ namespace RaceDay.Api.Controllers
                     AccountId = e.AccountID,
                     EventID = e.EventID,
                     CategoryId = e.CategoryId,
-                    EnrolmentDate = e.EnrolmentDate
+                    EnrolmentDate = e.EnrolmentDate,
+
+                    EventName = e.Event.EventName,
+                    CategoryName = e.Category.CategoryName,
+
+                    Status = "Enrolled"
                 })
                 .ToListAsync();
 
