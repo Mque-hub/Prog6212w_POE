@@ -1,0 +1,517 @@
+﻿@model RaceDay.Mvc.ViewModels.OrganiserResultsVm
+
+@{
+    ViewData["Title"] = "Manage Results";
+}
+
+<style>
+    .results-page {
+        color: #212529;
+    }
+
+    .results-header {
+        border-left: 5px solid #B91C1C;
+        padding-left: 18px;
+        margin-bottom: 30px;
+    }
+
+    .event-card {
+        border: 1px solid #dee2e6;
+        border-radius: 12px;
+        height: 100%;
+        transition: 0.2s ease;
+    }
+
+        .event-card:hover {
+            border-color: #B91C1C;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+    .event-button {
+        background-color: #B91C1C;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        padding: 9px 16px;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+        .event-button:hover {
+            background-color: #991B1B;
+            color: white;
+        }
+
+    .section-heading {
+        border-bottom: 2px solid #B91C1C;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+    }
+
+    .participant-card {
+        border: 1px solid #dee2e6;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        overflow: hidden;
+    }
+
+    .participant-heading {
+        background-color: #f1f1f1;
+        padding: 15px 20px;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .participant-content {
+        padding: 20px;
+    }
+
+    .result-button {
+        background-color: #B91C1C;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        padding: 9px 18px;
+    }
+
+        .result-button:hover {
+            background-color: #991B1B;
+            color: white;
+        }
+
+    .award-badge {
+        background-color: #f1f1f1;
+        color: #333;
+        padding: 5px 9px;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        margin: 2px;
+        display: inline-block;
+    }
+
+    .result-details {
+        background-color: #fafafa;
+        border: 1px solid #e5e5e5;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+</style>
+
+<div class="container py-4 results-page">
+
+    <div class="results-header">
+        <h2 class="fw-bold">Results Management</h2>
+        <p class="text-muted mb-0">
+            Manage finishing times, positions and awards for your events.
+        </p>
+    </div>
+
+    @if (TempData["ResultsError"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["ResultsError"]
+        </div>
+    }
+
+    @if (TempData["ResultsSuccess"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["ResultsSuccess"]
+        </div>
+    }
+
+    @if (Model.Events == null || !Model.Events.Any())
+    {
+        <div class="alert alert-info">
+            You have not created any events yet.
+        </div>
+    }
+    else
+    {
+        <h4 class="section-heading">Your Events</h4>
+
+        <div class="row g-4 mb-5">
+
+            @foreach (var eventItem in Model.Events)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="card event-card">
+                        <div class="card-body">
+
+                            <h5 class="fw-bold">
+                                @eventItem.EventName
+                            </h5>
+
+                            <p class="text-muted">
+                                <strong>Date:</strong>
+                                @eventItem.EventDate.ToString("dd MMM yyyy")
+                            </p>
+
+                            <p class="text-muted">
+                                <strong>Location:</strong>
+                                @eventItem.Location
+                            </p>
+
+                            <a asp-controller="Organiser"
+                               asp-action="Results"
+                               asp-route-eventId="@eventItem.EventID"
+                               class="event-button">
+                                Manage Results
+                            </a>
+
+                        </div>
+                    </div>
+                </div>
+            }
+
+        </div>
+
+        @if (Model.SelectedEventId.HasValue)
+        {
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h4 class="section-heading mb-1">
+                        Event Results
+                    </h4>
+
+                    <p class="text-muted">
+                        Event: <strong>@Model.SelectedEventName</strong>
+                    </p>
+                </div>
+
+                <a asp-controller="Organiser"
+                   asp-action="Results"
+                   class="btn btn-outline-dark">
+                    Clear Selection
+                </a>
+            </div>
+
+            <div class="row g-3 mb-4">
+
+                <div class="col-md-4">
+                    <div class="card border-0 bg-light">
+                        <div class="card-body">
+                            <p class="text-muted mb-1">
+                                Enrolled Participants
+                            </p>
+                            <h3 class="fw-bold">
+                                @Model.Participants.Count
+                            </h3>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card border-0 bg-light">
+                        <div class="card-body">
+                            <p class="text-muted mb-1">
+                                Recorded Results
+                            </p>
+                            <h3 class="fw-bold">
+                                @Model.Results.Count
+                            </h3>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card border-0 bg-light">
+                        <div class="card-body">
+                            <p class="text-muted mb-1">
+                                Pending Results
+                            </p>
+                            <h3 class="fw-bold">
+                                @(Model.Participants.Count - Model.Results.Count)
+                            </h3>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <h4 class="section-heading">
+                Participant Results
+            </h4>
+
+            @if (Model.Participants == null || !Model.Participants.Any())
+            {
+                <div class="alert alert-info">
+                    There are currently no participants enrolled in this event.
+                </div>
+            }
+            else
+            {
+                @foreach (var participant in Model.Participants)
+                {
+                    var result = Model.Results.FirstOrDefault(
+                    r => r.EnrolmentID == participant.EnrolmentID);
+
+                    <div class="participant-card">
+
+                        <div class="participant-heading d-flex justify-content-between align-items-center flex-wrap gap-2">
+
+                            <div>
+                                <h5 class="fw-bold mb-1">
+                                    @participant.ParticipantName
+                                </h5>
+
+                                <span class="text-muted">
+                                    Category: @participant.CategoryName
+                                </span>
+                            </div>
+
+                            @if (result != null)
+                            {
+                                <span class="badge bg-success">
+                                    Result Recorded
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning text-dark">
+                                    Pending
+                                </span>
+                            }
+
+                        </div>
+
+                        <div class="participant-content">
+
+                            @if (result != null)
+                            {
+                                <div class="result-details">
+
+                                    <h6 class="fw-bold mb-3">
+                                        Current Result
+                                    </h6>
+
+                                    <div class="row g-3">
+
+                                        <div class="col-md-4">
+                                            <small class="text-muted">
+                                                Finish Position
+                                            </small>
+                                            <h5 class="fw-bold">
+                                                @result.FinishPosition
+                                            </h5>
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <small class="text-muted">
+                                                Finish Time
+                                            </small>
+                                            <h5 class="fw-bold">
+                                                @result.FinishTime.ToString(@"hh\:mm\:ss")
+                                            </h5>
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <small class="text-muted">
+                                                Performance Details
+                                            </small>
+                                            <p class="mb-0">
+                                                @(string.IsNullOrWhiteSpace(result.PerformanceDetails)
+                                                                            ? "No details provided"
+                                                                            : result.PerformanceDetails)
+                        </p>
+                    </div>
+
+                                    </div>
+
+                                    <hr />
+
+                                    <strong>Awards:</strong>
+
+                @if (result.Awards != null && result.Awards.Any())
+                                    {
+                                        @foreach (var award in result.Awards)
+                                        {
+                                            <span class="award-badge">
+                                                @award
+                                            </span>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">
+                                            No awards recorded.
+                                        </span>
+                                    }
+
+                                </div>
+
+                                <h6 class="fw-bold mb-3">
+                                    Edit Result
+                                </h6>
+
+                                <form asp-controller="Organiser"
+                                      asp-action="UpdateResult"
+                                      method="post">
+
+                                    @Html.AntiForgeryToken()
+
+                                    <input type="hidden"
+                                           name="eventId"
+                                           value="@Model.SelectedEventId" />
+
+                                    <input type="hidden"
+                                           name="resultId"
+                                           value="@result.RaceResultsID" />
+
+                                    <div class="row g-3">
+
+                                        <div class="col-md-4">
+                                            <label class="form-label">
+                                                Finish Time
+                                            </label>
+
+                                            <input type="text"
+                                                   name="finishTime"
+                                                   class="form-control"
+                                                   value="@result.FinishTime.ToString(@"hh\:mm\:ss")"
+                                                   placeholder="00:35:42"
+                                                   required />
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <label class="form-label">
+                                                Finish Position
+                                            </label>
+
+                                            <input type="number"
+                                                   name="finishPosition"
+                                                   class="form-control"
+                                                   value="@result.FinishPosition"
+                                                   min="1"
+                                                   required />
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <label class="form-label">
+                                                Awards
+                                            </label>
+
+                                            <input type="text"
+                                                   name="awards"
+                                                   class="form-control"
+                                                   value="@(result.Awards != null ? string.Join(", ", result.Awards) : "")"
+                                                   placeholder="Gold Medal, Best Runner" />
+                                        </div>
+
+                                        <div class="col-12">
+                                            <label class="form-label">
+                                                Performance Details
+                                            </label>
+
+                                            <textarea name="performanceDetails"
+                                  class="form-control"
+                                  rows="2">@result.PerformanceDetails</textarea>
+                                        </div>
+
+                                        <div class="col-12">
+                                            <button type="submit"
+                                                    class="result-button">
+                                                Update Result
+                                            </button>
+                                        </div>
+
+                                    </div>
+
+                                </form>
+                            }
+                            else
+                            {
+                                <p class="text-muted mb-3">
+                                    No result has been recorded for this participant.
+                                    Enter their finishing details below.
+                                </p>
+
+                                <form asp-controller="Organiser"
+                                      asp-action="CreateResult"
+                                      method="post">
+
+                                    @Html.AntiForgeryToken()
+
+                                    <input type="hidden"
+                                           name="eventId"
+                                           value="@Model.SelectedEventId" />
+
+                                    <input type="hidden"
+                                           name="enrolmentId"
+                                           value="@participant.EnrolmentID" />
+
+                                    <div class="row g-3">
+
+                                        <div class="col-md-4">
+                                            <label class="form-label">
+                                                Finish Time
+                                            </label>
+
+                                            <input type="text"
+                                                   name="finishTime"
+                                                   class="form-control"
+                                                   placeholder="00:35:42"
+                                                   required />
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <label class="form-label">
+                                                Finish Position
+                                            </label>
+
+                                            <input type="number"
+                                                   name="finishPosition"
+                                                   class="form-control"
+                                                   min="1"
+                                                   placeholder="1"
+                                                   required />
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <label class="form-label">
+                                                Awards
+                                            </label>
+
+                                            <input type="text"
+                                                   name="awards"
+                                                   class="form-control"
+                                                   placeholder="Gold Medal, Best Runner" />
+                                        </div>
+
+                                        <div class="col-12">
+                                            <label class="form-label">
+                                                Performance Details
+                                            </label>
+
+                                            <textarea name="performanceDetails"
+                                  class="form-control"
+                                  rows="2"
+                                  placeholder="Enter additional performance details..."></textarea>
+                                        </div>
+
+                                        <div class="col-12">
+                                            <button type="submit"
+                                                    class="result-button">
+                                                Record Result
+                                            </button>
+                                        </div>
+
+                                    </div>
+
+                                </form>
+                            }
+
+                        </div>
+                    </div>
+                }
+            }
+        }
+        else
+        {
+            <div class="alert alert-secondary">
+                Select an event above to manage its results.
+            </div>
+        }
+    }
+</div>

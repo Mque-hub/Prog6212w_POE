@@ -71,7 +71,9 @@ namespace RaceDay.Api.Controllers
                 {
                     FirstName = organiser.FirstName,
                     LastName = organiser.LastName,
-                    Address = organiser.Address
+                    Email = account.Email,
+                    Address = organiser.Address,
+                    ProfilePictureUrl = organiser.ProfilePictureUrl
                 });
             }
 
@@ -208,6 +210,55 @@ namespace RaceDay.Api.Controllers
             await _context.SaveChangesAsync();
 
             
+            return Ok(new { imageUrl = url });
+        }
+
+        // POST: api/profiles/me/organiser/profile-picture
+        [HttpPost("me/organiser/profile-picture")]
+        [Authorize(Roles = nameof(Role.Organiser))]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> UploadOrganiserProfilePicture(
+            IFormFile file,
+            [FromServices] BlobStorageService blobStorage)
+        {
+            var account = await GetCurrentAccountAsync();
+
+            if (account == null)
+                return Unauthorized();
+
+            if (account.OrganiserId == null)
+                return NotFound("Organiser profile not found.");
+
+            var organiser = await _context.Organisers
+                .FirstOrDefaultAsync(o =>
+                    o.OrganiserId == account.OrganiserId.Value);
+
+            if (organiser == null)
+                return NotFound("Organiser profile not found.");
+
+            if (file == null || file.Length == 0)
+                return BadRequest("Please select an image.");
+
+            var allowedTypes = new[]
+            {
+        "image/jpeg",
+        "image/png",
+        "image/webp"
+    };
+
+            if (!allowedTypes.Contains(file.ContentType.ToLowerInvariant()))
+                return BadRequest("Only JPG, PNG and WEBP images are allowed.");
+
+            if (file.Length > 5 * 1024 * 1024)
+                return BadRequest("Image size must not exceed 5 MB.");
+
+            string url = await blobStorage.UploadAsync(
+                file, "organiser-profiles");
+
+            organiser.ProfilePictureUrl = url;
+
+            await _context.SaveChangesAsync();
+
             return Ok(new { imageUrl = url });
         }
         private async Task<Account?> GetCurrentAccountAsync()

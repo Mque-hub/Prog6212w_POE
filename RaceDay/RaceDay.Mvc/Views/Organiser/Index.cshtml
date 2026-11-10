@@ -1,9 +1,213 @@
-﻿@{
+﻿@model RaceDay.Mvc.ViewModels.OrganiserDashboardVm
+
+@{
     ViewData["Title"] = "Organiser Dashboard";
 }
 
-<div class="container mt-4">
-    <h2>Organiser Dashboard</h2>
+<style>
+    .dashboard-title {
+        font-weight: 700;
+        color: #171717;
+    }
 
-    <p>Welcome to the RaceDay Organiser Dashboard.</p>
+    .stat-card {
+        border: none;
+        border-radius: 10px;
+        min-height: 145px;
+        color: white;
+    }
+
+    .stat-black { background: #171717; }
+    .stat-red { background: #B91C1C; }
+    .stat-grey { background: #525252; }
+    .stat-light {
+        background: #F5F5F5;
+        color: #171717;
+        border: 1px solid #dedede;
+    }
+
+    .stat-number {
+        font-size: 2rem;
+        font-weight: 700;
+    }
+
+    .dashboard-card {
+        border: 1px solid #e5e5e5;
+        border-radius: 10px;
+    }
+
+    .btn-raceday {
+        background: #B91C1C;
+        color: white;
+        border: none;
+    }
+
+    .btn-raceday:hover {
+        background: #991B1B;
+        color: white;
+    }
+</style>
+
+<div class="container-fluid py-3">
+
+    <div class="mb-4">
+        <h2 class="dashboard-title">Organiser Dashboard</h2>
+        <p class="text-muted">
+            Manage your RaceDay events and participants.
+        </p>
+    </div>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["Error"]
+        </div>
+    }
+
+    <!-- Statistics -->
+    <div class="row g-3 mb-4">
+
+        <div class="col-md-6 col-lg-3">
+            <div class="card stat-card stat-black">
+                <div class="card-body">
+                    <h6>Total Events</h6>
+                    <div class="stat-number">
+                        @Model.TotalEvents
+                    </div>
+                    <small>Events created by you</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="card stat-card stat-red">
+                <div class="card-body">
+                    <h6>Total Enrolments</h6>
+                    <div class="stat-number">
+                        @Model.TotalEnrolments
+                    </div>
+                    <small>Across your events</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="card stat-card stat-grey">
+                <div class="card-body">
+                    <h6>Upcoming Events</h6>
+                    <div class="stat-number">
+                        @Model.UpcomingEvents
+                    </div>
+                    <small>Scheduled events</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="card stat-card stat-light">
+                <div class="card-body">
+                    <h6>Event Locations</h6>
+                    <div class="stat-number">
+                        @Model.EventLocations
+                    </div>
+                    <small>Unique locations</small>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Dashboard Actions -->
+    <div class="card dashboard-card mb-4">
+        <div class="card-body">
+            <h5 class="fw-bold mb-3">Event Management</h5>
+
+            <div class="d-flex flex-wrap gap-2">
+
+                <a asp-controller="Events"
+                   asp-action="Events"
+                   class="btn btn-dark">
+                    My Events
+                </a>
+
+                <a asp-controller="Events"
+                   asp-action="CreateEvent"
+                   class="btn btn-raceday">
+                    + Create New Event
+                </a>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Events Table -->
+    <div class="card dashboard-card">
+        <div class="card-body">
+
+            <h5 class="fw-bold mb-3">My Recent Events</h5>
+
+            @if (Model.Events == null || !Model.Events.Any())
+            {
+                <div class="alert alert-info">
+                    You have not created any events yet.
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Event Name</th>
+                                <th>Type</th>
+                                <th>Date</th>
+                                <th>Location</th>
+                                <th>Participants</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var item in Model.Events
+                                                    .OrderBy(e => e.EventDate)
+                                                    .Take(5))
+                            {
+                                <tr>
+                                    <td class="fw-semibold">
+                                        @item.EventName
+                                    </td>
+
+                                    <td>@item.EventType</td>
+
+                                    <td>
+                                        @item.EventDate.ToString("dd MMM yyyy")
+                                    </td>
+
+                                    <td>@item.Location</td>
+
+                                    <td>
+                                        <a asp-controller="Events"
+                                           asp-action="Participants"
+                                           asp-route-eventId="@item.EventID"
+                                           class="btn btn-sm btn-outline-danger">
+                                            View Participants
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+
+                    </table>
+                </div>
+            }
+
+            <a asp-controller="Events"
+               asp-action="Events"
+               class="btn btn-outline-dark btn-sm">
+                View All Events
+            </a>
+
+        </div>
+    </div>
+
 </div>

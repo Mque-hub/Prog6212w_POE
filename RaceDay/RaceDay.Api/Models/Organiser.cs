@@ -8,6 +8,8 @@
         public string LastName { get; set; }
         public string Address { get; set; }
 
+        public string? ProfilePictureUrl { get; set; }
+
         // One Organiser -> many Events
         public ICollection<Event> Events { get; set; }
             = new List<Event>();

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RaceDay.Api.Data;
@@ -6,7 +7,6 @@ using RaceDay.Api.Models;
 using RaceDay.Contracts;
 using RaceDay.Contracts.DTOs;
 using System.Security.Claims;
-
 
 namespace RaceDay.Api.Controllers
 {
@@ -74,10 +74,10 @@ namespace RaceDay.Api.Controllers
             _context.RaceResults.Add(result);
 
             var awardNames = (request.Awards ?? new List<string>())
-             .Where(a => !string.IsNullOrWhiteSpace(a))
-             .Select(a => a.Trim())
-             .Distinct(StringComparer.OrdinalIgnoreCase)
-             .ToList();
+                .Where(a => !string.IsNullOrWhiteSpace(a))
+                .Select(a => a.Trim())
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
 
             foreach (var awardName in awardNames)
             {
@@ -93,13 +93,14 @@ namespace RaceDay.Api.Controllers
                 StatusCodes.Status201Created,
                 new ResultDto
                 {
+                    RaceResultsID = result.RaceResultsID,
                     EnrolmentID = result.EnrolmentID,
                     FinishTime = result.FinishTime,
                     FinishPosition = result.FinishPosition,
                     PerformanceDetails = result.PerformanceDetails,
                     Awards = result.Awards
-                    .Select(a => a.AwardsDetails)
-                    .ToList()
+                        .Select(a => a.AwardsDetails)
+                        .ToList()
                 });
         }
 
@@ -145,12 +146,12 @@ namespace RaceDay.Api.Controllers
             result.FinishPosition = request.FinishPosition;
             result.PerformanceDetails = request.PerformanceDetails;
 
-            // This API version supports one to many awards.
+            // This API version supports one-to-many awards.
             var awardNames = (request.Awards ?? new List<string>())
-            .Where(a => !string.IsNullOrWhiteSpace(a))
-            .Select(a => a.Trim())
-            .Distinct(StringComparer.OrdinalIgnoreCase)
-            .ToList();
+                .Where(a => !string.IsNullOrWhiteSpace(a))
+                .Select(a => a.Trim())
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
 
             foreach (var existingAward in result.Awards.ToList())
             {
@@ -173,7 +174,6 @@ namespace RaceDay.Api.Controllers
         }
 
         // GET: api/results/my
-        // GET: api/results/my
         [HttpGet("results/my")]
         [Authorize(Roles = nameof(Role.Participant))]
         public async Task<ActionResult<IEnumerable<ResultDto>>>
@@ -189,8 +189,8 @@ namespace RaceDay.Api.Controllers
                 .Where(r => r.Enrolment.AccountID == accountId.Value)
                 .Select(r => new ResultDto
                 {
+                    RaceResultsID = r.RaceResultsID,
                     EnrolmentID = r.EnrolmentID,
-
                     FinishTime = r.FinishTime,
                     FinishPosition = r.FinishPosition,
                     PerformanceDetails = r.PerformanceDetails,
@@ -241,10 +241,12 @@ namespace RaceDay.Api.Controllers
                 .OrderBy(r => r.FinishPosition)
                 .Select(r => new ResultDto
                 {
+                    RaceResultsID = r.RaceResultsID,
                     EnrolmentID = r.EnrolmentID,
                     FinishTime = r.FinishTime,
                     FinishPosition = r.FinishPosition,
                     PerformanceDetails = r.PerformanceDetails,
+
                     Awards = r.Awards
                         .Select(a => a.AwardsDetails)
                         .ToList()

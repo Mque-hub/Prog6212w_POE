@@ -49,8 +49,51 @@ namespace RaceDay.Api.Controllers
                 return Ok(result);
             }
 
-            // GET: api/events/1
-            [HttpGet("{id:int}")]
+        // GET: api/events/mine
+        // Retrieves events belonging to the logged-in organiser.
+        [HttpGet("mine")]
+        [Authorize(Roles = nameof(Role.Organiser))]
+        public async Task<ActionResult<IEnumerable<EventDto>>> GetMyEvents()
+        {
+            // Retrieve the logged-in account ID from the JWT.
+            var accountIdValue = User.FindFirstValue(
+                ClaimTypes.NameIdentifier);
+
+            if (!int.TryParse(accountIdValue, out var accountId))
+                return Unauthorized();
+
+            // Find the organiser linked to this account.
+            var account = await _context.Accounts
+                .FirstOrDefaultAsync(a => a.AccountId == accountId);
+
+            if (account?.OrganiserId == null)
+                return Forbid();
+
+            // Retrieve only this organiser's events.
+            var events = await _context.Events
+                .AsNoTracking()
+                .Where(e => e.OrganiserID == account.OrganiserId.Value)
+                .ToListAsync();
+
+            var result = events.Select(e => new EventDto
+            {
+                EventID = e.EventID,
+                OrganiserID = e.OrganiserID,
+                EventName = e.EventName,
+                Description = e.Description,
+                EventType = e.EventType,
+                EventDate = e.EventDate,
+                EventDuration = e.EventDuration,
+                Location = e.Location,
+                Distance = e.Distance,
+                BannerImageUrl = e.BannerImageUrl
+            }).ToList();
+
+            return Ok(result);
+        }
+
+        // GET: api/events/1
+        [HttpGet("{id:int}")]
             [AllowAnonymous]
             public async Task<ActionResult<EventDto>> GetEventById(int id)
             {
@@ -251,8 +294,12 @@ namespace RaceDay.Api.Controllers
 
                 select new EventParticipantDto
                 {
+                    EnrolmentID = enrolment.EnrolmentId,
+
                     ParticipantName = participant.FirstName + " " +
-                                      participant.LastName,
+                      participant.LastName,
+
+                    EventID = enrolment.EventID,
 
                     CategoryName = category.CategoryName,
 

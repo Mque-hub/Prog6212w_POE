@@ -1,15 +1,21 @@
-﻿namespace RaceDay.Mvc.ViewModels
+﻿
+using RaceDay.Contracts.DTOs;
+
+namespace RaceDay.Mvc.ViewModels
 {
     public class OrganiserDashboardVm
     {
-        public List<OrganiserEventSummaryVm> Events { get; set; } = new();
-    }
+        // Organiser's events retrieved from the API.
+        public List<EventDto> Events { get; set; }
+            = new List<EventDto>();
 
-    public class OrganiserEventSummaryVm
-    {
-        public int EventID { get; set; }
-        public string EventName { get; set; } = string.Empty;
-        public DateTime EventDate { get; set; }
-        public int EnrolmentCount { get; set; }
+        // Dashboard statistics.
+        public int TotalEvents { get; set; }
+
+        public int TotalEnrolments { get; set; }
+
+        public int UpcomingEvents { get; set; }
+
+        public int EventLocations { get; set; }
     }
 }

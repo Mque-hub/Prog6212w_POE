@@ -1,0 +1,208 @@
+﻿@model RaceDay.Mvc.ViewModels.OrganiserEnrolmentsVm
+
+@{
+    ViewData["Title"] = "Organiser Enrolments";
+}
+
+<style>
+    .enrolments-page {
+        color: #212529;
+    }
+
+    .enrolments-header {
+        border-left: 5px solid #B91C1C;
+        padding-left: 18px;
+        margin-bottom: 30px;
+    }
+
+    .enrolment-card {
+        border: 1px solid #dee2e6;
+        border-radius: 12px;
+        transition: 0.2s ease;
+        height: 100%;
+    }
+
+        .enrolment-card:hover {
+            border-color: #B91C1C;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+    .event-button {
+        background-color: #B91C1C;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        padding: 9px 16px;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+        .event-button:hover {
+            background-color: #991B1B;
+            color: white;
+        }
+
+    .enrolment-table thead {
+        background-color: #212529;
+        color: white;
+    }
+
+    .section-heading {
+        border-bottom: 2px solid #B91C1C;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+    }
+
+    .category-badge {
+        background-color: #f1f1f1;
+        color: #333;
+        padding: 6px 10px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+    }
+</style>
+
+<div class="container py-4 enrolments-page">
+
+    <div class="enrolments-header">
+        <h2 class="fw-bold">Event Enrolments</h2>
+        <p class="text-muted mb-0">
+            View participants enrolled in your events.
+        </p>
+    </div>
+
+    @if (TempData["EnrolmentsError"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["EnrolmentsError"]
+        </div>
+    }
+
+    @if (Model.Events == null || !Model.Events.Any())
+    {
+        <div class="alert alert-info">
+            You have not created any events yet.
+        </div>
+    }
+    else
+    {
+        <h4 class="section-heading">Your Events</h4>
+
+        <div class="row g-4 mb-5">
+
+            @foreach (var eventItem in Model.Events)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="card enrolment-card">
+                        <div class="card-body">
+
+                            <h5 class="fw-bold">
+                                @eventItem.EventName
+                            </h5>
+
+                            <p class="text-muted mb-2">
+                                <strong>Location:</strong>
+                                @eventItem.Location
+                            </p>
+
+                            <p class="text-muted mb-3">
+                                <strong>Date:</strong>
+                                @eventItem.EventDate.ToString("dd MMM yyyy")
+                            </p>
+
+                            <a asp-controller="Organiser"
+                               asp-action="Enrolments"
+                               asp-route-eventId="@eventItem.EventID"
+                               class="event-button">
+                                View Enrolments
+                            </a>
+
+                        </div>
+                    </div>
+                </div>
+            }
+
+        </div>
+
+        @if (Model.SelectedEventId.HasValue)
+        {
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h4 class="section-heading mb-1">
+                        Enrolled Participants
+                    </h4>
+
+                    <p class="text-muted">
+                        Event: <strong>@Model.SelectedEventName</strong>
+                    </p>
+                </div>
+
+                <a asp-controller="Organiser"
+                   asp-action="Enrolments"
+                   class="btn btn-outline-dark">
+                    Clear Selection
+                </a>
+            </div>
+
+            <div class="mb-3">
+                <span class="badge bg-dark fs-6">
+                    Total Enrolments: @Model.Participants.Count
+                </span>
+            </div>
+
+            @if (!Model.Participants.Any())
+            {
+                <div class="alert alert-info">
+                    No participants have enrolled in this event yet.
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover enrolment-table align-middle">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Participant Name</th>
+                                <th>Category</th>
+                                <th>Enrolment Date</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @for (int i = 0; i < Model.Participants.Count; i++)
+                            {
+                                var participant = Model.Participants[i];
+
+                                <tr>
+                                    <td>@(i + 1)</td>
+
+                                    <td class="fw-semibold">
+                                        @participant.ParticipantName
+                                    </td>
+
+                                    <td>
+                                        <span class="category-badge">
+                                            @participant.CategoryName
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        @participant.EnrolmentDate.ToString("dd MMM yyyy")
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="alert alert-secondary">
+                Select one of your events above to view its enrolled participants.
+            </div>
+        }
+    }
+</div>

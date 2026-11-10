@@ -1,4 +1,4 @@
-﻿```cshtml
+﻿
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,10 +13,12 @@
 <body>
 
     <header>
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container">
 
-                <a class="navbar-brand" asp-controller="Home" asp-action="Index">
+                <a class="navbar-brand text-white"
+                   asp-controller="Home"
+                   asp-action="Index">
                     RaceDay
                 </a>
 
@@ -32,13 +34,34 @@
                         <a class="nav-link" asp-controller="Auth" asp-action="Login">Login</a>
                         <a class="nav-link" asp-controller="Auth" asp-action="Register">Register</a>
                     }
+
                     else if (role == "Organiser")
                     {
-                        <a class="nav-link" asp-controller="Organiser" asp-action="Index">Dashboard</a>
-                        <a class="nav-link" asp-controller="Organiser" asp-action="Events">Events</a>
-                        <a class="nav-link" asp-controller="Organiser" asp-action="Enrolments">Enrolments</a>
-                        <a class="nav-link" asp-controller="Organiser" asp-action="Results">Results</a>
+                        <a class="nav-link text-white"
+                           asp-controller="Organiser"
+                           asp-action="Index">
+                            Dashboard
+                        </a>
+
+                        <a class="nav-link text-white"
+                           asp-controller="Events"
+                           asp-action="Events">
+                            Events
+                        </a>
+
+                        <a class="nav-link text-white"
+                           asp-controller="Organiser"
+                           asp-action="Enrolments">
+                            Enrolments
+                        </a>
+
+                        <a class="nav-link text-white"
+                           asp-controller="Organiser"
+                           asp-action="Profile">
+                            My Profile
+                        </a>
                     }
+
                     else if (role == "Participant")
                     {
                         <a class="nav-link"
@@ -96,4 +119,3 @@
 
 </body>
 </html>
-```
