@@ -1,0 +1,135 @@
+﻿@model List<RaceDay.Contracts.DTOs.EventDto>
+
+@{
+    ViewData["Title"] = "Upcoming Events";
+
+    var eventTypes = Model
+        .Where(e => !string.IsNullOrWhiteSpace(e.EventType))
+        .Select(e => e.EventType)
+        .Distinct()
+        .ToList();
+}
+
+<div class="container mt-5">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2>Upcoming Events</h2>
+            <p class="text-muted">Discover and explore upcoming RaceDay events.</p>
+        </div>
+
+        <a asp-controller="Participant"
+           asp-action="MyEnrolments"
+           class="btn btn-outline-primary">
+            My Enrolments
+        </a>
+    </div>
+
+    <!-- Search and Filter -->
+    <form asp-controller="Participant"
+          asp-action="Index"
+          method="get"
+          class="row g-3 mb-4">
+
+        <div class="col-md-5">
+            <input type="text"
+                   name="search"
+                   class="form-control"
+                   placeholder="Search by event name or location"
+                   value="@Context.Request.Query["search"]" />
+        </div>
+
+        <div class="col-md-4">
+            <select name="type" class="form-select">
+                <option value="">All Event Types</option>
+
+                @foreach (var eventType in eventTypes)
+                {
+                    <option value="@eventType"
+                            selected="@(Context.Request.Query["type"] == eventType)">
+                        @eventType
+                    </option>
+                }
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <button type="submit" class="btn btn-primary w-100">
+                Search Events
+            </button>
+        </div>
+
+    </form>
+
+    <!-- Event Listings -->
+    @if (Model == null || !Model.Any())
+    {
+        <div class="alert alert-info">
+            No upcoming events were found.
+        </div>
+    }
+    else
+    {
+        <div class="row">
+
+            @foreach (var eventItem in Model)
+            {
+                <div class="col-md-6 col-lg-4 mb-4">
+
+                    <div class="card h-100 shadow-sm">
+
+                        @if (!string.IsNullOrWhiteSpace(eventItem.BannerImageUrl))
+                        {
+                            <img src="@eventItem.BannerImageUrl"
+                                 class="card-img-top"
+                                 alt="@eventItem.EventName"
+                                 style="height: 200px; object-fit: cover;" />
+                        }
+
+                        <div class="card-body">
+
+                            <h5 class="card-title">
+                                @eventItem.EventName
+                            </h5>
+
+                            <span class="badge bg-primary mb-2">
+                                @eventItem.EventType
+                            </span>
+
+                            <p class="card-text">
+                                @eventItem.Description
+                            </p>
+
+                            <hr />
+
+                            <p>
+                                <strong>Date:</strong>
+                                @eventItem.EventDate.ToString("dd MMMM yyyy")
+                            </p>
+
+                            <p>
+                                <strong>Location:</strong>
+                                @eventItem.Location
+                            </p>
+
+                            <p>
+                                <strong>Distance:</strong>
+                                @eventItem.Distance
+                            </p>
+
+                            <p>
+                                <strong>Duration:</strong>
+                                @eventItem.EventDuration
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            }
+
+        </div>
+    }
+
+</div>

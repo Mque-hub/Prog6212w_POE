@@ -1,5 +1,4 @@
 ﻿using Azure;
-using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using RaceDay.Contracts;
 using RaceDay.Contracts.DTOs;
@@ -17,9 +16,12 @@ public class AuthController : Controller
     {
         if (!ModelState.IsValid) return View(vm);
         object request;
+        string endpoint;
 
         if (vm.Role.Equals("Organiser", StringComparison.OrdinalIgnoreCase))
         {
+            endpoint = "api/auth/register/organiser";
+
             request = new RegisterOrganiserRequest
             {
                 FirstName = vm.FirstName,
@@ -31,21 +33,29 @@ public class AuthController : Controller
         }
         else
         {
+            endpoint = "api/auth/register/participant";
+
             request = new RegisterParticipantRequest
             {
                 FirstName = vm.FirstName,
                 LastName = vm.LastName,
-                CellNumber = vm.CellNumber!,// in the same way that ? means nullable, ! tells the complier that you expect a value for CellNumber
+                CellNumber = vm.CellNumber!,
                 Address = vm.Address,
                 Email = vm.Email,
                 Password = vm.Password
             };
         }
 
-        var response = await _api.SendAsync(HttpMethod.Post, "api/auth/register", request);
+        var response = await _api.SendAsync(HttpMethod.Post, endpoint, request);
+        var responseBody = await response.Content.ReadAsStringAsync();
+
+        Console.WriteLine("Registration URL: " + endpoint);
+        Console.WriteLine("Registration Status: " + response.StatusCode);
+        Console.WriteLine("Registration Response: " + responseBody);
+
         if (!response.IsSuccessStatusCode)
         {
-            ModelState.AddModelError("", await response.Content.ReadAsStringAsync());
+            ModelState.AddModelError("", responseBody);
             return View(vm);
         }
         TempData["Success"] = "Registration successful. Please log in.";
@@ -62,8 +72,9 @@ public class AuthController : Controller
         var response = await _api.SendAsync(
             HttpMethod.Post,
             "api/auth/login",
-            new LoginRequest
+            new LoginRequestDTO
             {
+                AuthenticationRole = vm.AuthenticationRole,
                 Email = vm.Email,
                 Password = vm.Password
             });

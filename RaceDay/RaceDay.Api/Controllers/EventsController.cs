@@ -210,21 +210,21 @@ namespace RaceDay.Api.Controllers
         public async Task<ActionResult<IEnumerable<EventParticipantDto>>>
             GetEventParticipants(int id)
         {
-            // 1. Retrieve the logged-in organiser's AccountID
+            
             var accountIdValue = User.FindFirstValue(
                 ClaimTypes.NameIdentifier);
 
             if (!int.TryParse(accountIdValue, out var accountId))
                 return Unauthorized();
 
-            // 2. Find the organiser's account
+           
             var account = await _context.Accounts
                 .FirstOrDefaultAsync(a => a.AccountId == accountId);
 
             if (account?.OrganiserId == null)
                 return Forbid();
 
-            // 3. Check whether this event belongs to the organiser
+            
             var existingEvent = await _context.Events
                 .FirstOrDefaultAsync(e =>
                     e.EventID == id &&
@@ -233,7 +233,7 @@ namespace RaceDay.Api.Controllers
             if (existingEvent == null)
                 return NotFound();
 
-            // 4. Retrieve participants and their selected categories
+            
             var participants = await (
                 from enrolment in _context.Enrolments
 
@@ -260,34 +260,35 @@ namespace RaceDay.Api.Controllers
                 }
             ).AsNoTracking().ToListAsync();
 
-            // 5. Return the participants
+            
             return Ok(participants);
 
         }
 
+
         // POST: api/events/1/banner
         [HttpPost("{id:int}/banner")]
         [Authorize(Roles = nameof(Role.Organiser))]
+        [Consumes("multipart/form-data")]
         public async Task<IActionResult> UploadBanner(
             int id,
-            [FromForm] IFormFile file,
+            [FromForm] UploadBannerRequest request,
             [FromServices] BlobStorageService blobStorage)
         {
-            // 1. Get the logged-in organiser's AccountID
+            var file = request.File;
+
             var accountIdValue = User.FindFirstValue(
                 ClaimTypes.NameIdentifier);
 
             if (!int.TryParse(accountIdValue, out var accountId))
                 return Unauthorized();
 
-            // 2. Find the organiser's account
             var account = await _context.Accounts
                 .FirstOrDefaultAsync(a => a.AccountId == accountId);
 
             if (account?.OrganiserId == null)
                 return Forbid();
 
-            // 3. Check that the event belongs to this organiser
             var existingEvent = await _context.Events
                 .FirstOrDefaultAsync(e =>
                     e.EventID == id &&
@@ -296,22 +297,19 @@ namespace RaceDay.Api.Controllers
             if (existingEvent == null)
                 return NotFound("Event not found.");
 
-            // 4. Validate the uploaded image
             if (file == null || file.Length == 0)
                 return BadRequest("Please select an image.");
 
-            // 5. Upload image to Azure Blob Storage
             string url = await blobStorage.UploadAsync(
                 file, "event-banners");
 
-            // 6. Save the image URL against the event
             existingEvent.BannerImageUrl = url;
 
             await _context.SaveChangesAsync();
 
-            // 7. Return the image URL
             return Ok(new { imageUrl = url });
         }
+
 
     }
 

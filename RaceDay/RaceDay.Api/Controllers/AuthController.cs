@@ -91,15 +91,17 @@ namespace RaceDay.Api.Controllers
                         Email = account.Email
                     });
                 }
-                catch (DbUpdateException)
-                {
-                    await transaction.RollbackAsync();
+            catch (DbUpdateException ex)
+            {
+                await transaction.RollbackAsync();
 
-                    return Conflict(
-                        "Registration could not be completed. " +
-                        "The email may already be registered.");
-                }
+                Console.WriteLine("REGISTRATION DATABASE ERROR:");
+                Console.WriteLine(ex.ToString());
+
+                return Conflict(
+                    "Registration could not be completed. Check the API Output window.");
             }
+        }
 
             [HttpPost("register/organiser")]
             public async Task<IActionResult> RegisterOrganiser(
@@ -164,15 +166,17 @@ namespace RaceDay.Api.Controllers
                         Email = account.Email
                     });
                 }
-                catch (DbUpdateException)
-                {
-                    await transaction.RollbackAsync();
+            catch (DbUpdateException ex)
+            {
+                await transaction.RollbackAsync();
 
-                    return Conflict(
-                        "Registration could not be completed. " +
-                        "The email may already be registered.");
-                }
+                Console.WriteLine("REGISTRATION DATABASE ERROR:");
+                Console.WriteLine(ex.ToString());
+
+                return Conflict(
+                    "Registration could not be completed. Check the API Output window.");
             }
+        }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginRequestDTO request)
@@ -186,7 +190,9 @@ namespace RaceDay.Api.Controllers
             var email = request.Email.Trim();
 
             var account = await _context.Accounts
-                .FirstOrDefaultAsync(a => a.Email == email); // this will find the account matching the supplied email. 
+                .FirstOrDefaultAsync(a => a.Email == email); // this will find the account matching the supplied email.
+            Console.WriteLine($"LOGIN EMAIL: {email}");
+            Console.WriteLine($"ACCOUNT FOUND: {account != null}");
 
             if (account == null)
             {
@@ -199,6 +205,7 @@ namespace RaceDay.Api.Controllers
                 account,
                 account.PasswordHash,
                 request.Password); // This checks the submitted password without storing or comparing plain-text passwords.
+            Console.WriteLine($"PASSWORD VERIFICATION: {verificationResult}");
 
             if (verificationResult == PasswordVerificationResult.Failed)
             {

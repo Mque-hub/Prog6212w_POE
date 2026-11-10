@@ -29,6 +29,21 @@
                     <span asp-validation-for="Password" class="text-danger"></span>
                 </div>
 
+                <div class="mb-3">
+                    <label asp-for="AuthenticationRole" class="form-label">
+                        Login As
+                    </label>
+
+                    <select asp-for="AuthenticationRole" class="form-select">
+                        <option value="">Select your role</option>
+                        <option value="Participant">Participant</option>
+                        <option value="Organiser">Organiser</option>
+                    </select>
+
+                    <span asp-validation-for="AuthenticationRole"
+                          class="text-danger"></span>
+                </div>
+
                 <button type="submit" class="btn btn-primary w-100">
                     Login
                 </button>

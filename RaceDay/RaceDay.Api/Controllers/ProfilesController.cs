@@ -158,10 +158,10 @@ namespace RaceDay.Api.Controllers
         [Authorize(Roles = nameof(Role.Participant))]
         [Consumes("multipart/form-data")]
         public async Task<IActionResult> UploadProfilePicture(
-            [FromForm] IFormFile file,
-            [FromServices] BlobStorageService blobStorage)
+        IFormFile file,
+        [FromServices] BlobStorageService blobStorage)
         {
-            
+
             var account = await GetCurrentAccountAsync();
 
             if (account == null)

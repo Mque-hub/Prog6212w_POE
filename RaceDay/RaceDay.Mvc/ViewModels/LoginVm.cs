@@ -8,5 +8,7 @@ namespace RaceDay.Mvc.ViewModels
         public string Email { get; set; } = string.Empty;
         [Required, DataType(DataType.Password)]
         public string Password { get; set; } = string.Empty;
+        [Required]
+        public string AuthenticationRole { get; set; } = string.Empty;
     }
 }
