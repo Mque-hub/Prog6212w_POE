@@ -1,46 +1,122 @@
 ﻿@model List<RaceDay.Contracts.DTOs.EnrolmentDto>
 
 @{
-    ViewData["Title"] = "My Events";
+    ViewData["Title"] = "My Enrolments";
 }
 
-<h2>My Events</h2>
+<div class="container mt-4">
 
-@if (TempData["Error"] != null)
-{
-    <div class="alert alert-danger">
-        @TempData["Error"]
-    </div>
-}
+    <h2 class="mb-3">My Enrolments</h2>
 
-@if (Model != null && Model.Any())
-{
-    <table class="table table-bordered">
+    <p class="text-muted">
+        View and manage the events you have entered.
+    </p>
 
-        <thead>
-            <tr>
-                <th>Enrolment ID</th>
-                <th>Event ID</th>
-                <th>Category ID</th>
-                <th>Enrolment Date</th>
-            </tr>
-        </thead>
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["Success"]
+        </div>
+    }
 
-        <tbody>
-            @foreach (var item in Model)
-            {
-                <tr>
-                    <td>@item.EnrolmentId</td>
-                    <td>@item.EventID</td>
-                    <td>@item.CategoryId</td>
-                    <td>@item.EnrolmentDate</td>
-                </tr>
-            }
-        </tbody>
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["Error"]
+        </div>
+    }
 
-    </table>
-}
-else
-{
-    <p>You have not entered any events yet.</p>
-}
+    @if (Model == null || !Model.Any())
+    {
+        <div class="alert alert-info">
+            You have not entered any events yet.
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+
+            <table class="table table-striped table-hover">
+
+                <thead class="table-dark">
+                    <tr>
+                        <th>Event Name</th>
+                        <th>Category</th>
+                        <th>Enrolment Date</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.EventName</td>
+
+                            <td>@item.CategoryName</td>
+
+                            <td>
+                                @item.EnrolmentDate.ToString("dd MMM yyyy")
+                            </td>
+
+                            <td>
+                                @if (!string.IsNullOrWhiteSpace(item.Status))
+                                {
+                                    <span class="badge bg-success">
+                                        @item.Status
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">
+                                        Not specified
+                                    </span>
+                                }
+                            </td>
+
+                            <td>
+                                <a asp-controller="Events"
+                                   asp-action="Details"
+                                   asp-route-id="@item.EventID"
+                                   class="btn btn-primary btn-sm">
+                                    View Event
+                                </a>
+
+                                <form asp-controller="Events"
+                                      asp-action="CancelEnrolment"
+                                      method="post"
+                                      class="d-inline"
+                                      onsubmit="return confirm('Are you sure you want to cancel this enrolment?');">
+
+                                    @Html.AntiForgeryToken()
+
+                                    <input type="hidden"
+                                           name="id"
+                                           value="@item.EnrolmentId" />
+
+                                    <button type="submit"
+                                            class="btn btn-danger btn-sm">
+                                        Cancel
+                                    </button>
+
+                                </form>
+                            </td>
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+    }
+
+    <a asp-controller="Events"
+       asp-action="ParticipantEvents"
+       class="btn btn-primary mt-3">
+        Browse Available Events
+    </a>
+
+</div>

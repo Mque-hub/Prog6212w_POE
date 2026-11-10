@@ -1,0 +1,114 @@
+﻿@model RaceDay.Mvc.ViewModels.ResultsVm
+
+@{
+    ViewData["Title"] = "My Results";
+}
+
+<div class="container mt-4">
+
+    <!-- Page heading -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>My Results</h2>
+
+        <a asp-controller="Participant"
+           asp-action="Index"
+           class="btn btn-secondary">
+            Back to Dashboard
+        </a>
+    </div>
+
+    <!-- Check whether results exist -->
+    @if (Model.Results == null || !Model.Results.Any())
+    {
+        <div class="alert alert-info">
+            <h5>No Results Available</h5>
+            <p class="mb-0">
+                You do not have any recorded race results yet.
+                Once your event results have been recorded,
+                they will appear here.
+            </p>
+        </div>
+    }
+    else
+    {
+        <!-- Results table -->
+        <div class="card shadow-sm">
+
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0">Your Race Results</h5>
+            </div>
+
+            <div class="card-body">
+
+                <div class="table-responsive">
+
+                    <table class="table table-striped table-hover align-middle">
+
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Event Name</th>
+                                <th>Event Date</th>
+                                <th>Category</th>
+                                <th>Finish Position</th>
+                                <th>Finish Time</th>
+                                <th>Performance Details</th>
+                                <th>Awards</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            @foreach (var result in Model.Results)
+                            {
+                                <tr>
+                                    <td>@result.EventName</td>
+
+                                    <td>
+                                        @result.EventDate.ToString("dd MMM yyyy")
+                                    </td>
+
+                                    <td>@result.CategoryName</td>
+
+                                    <td>@result.FinishPosition</td>
+
+                                    <td>@result.FinishTime</td>
+
+                                    <td>
+                                        @if (!string.IsNullOrWhiteSpace(result.PerformanceDetails))
+                                        {
+                                            @result.PerformanceDetails
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">
+                                                Not available
+                                            </span>
+                                        }
+                                    </td>
+
+                                    <td>
+                                        @if (result.Awards != null && result.Awards.Any())
+                                        {
+                                            @string.Join(", ", result.Awards)
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">
+                                                No awards
+                                            </span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+        </div>
+    }
+
+</div>

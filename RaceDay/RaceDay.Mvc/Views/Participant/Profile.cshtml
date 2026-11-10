@@ -1,0 +1,76 @@
+﻿@model RaceDay.Contracts.DTOs.ParticipantProfileDto
+
+@{
+    ViewData["Title"] = "My Profile";
+}
+
+<div class="container mt-4">
+
+    <h2 class="mb-4">My Participant Profile</h2>
+
+    @if (TempData["ProfileError"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["ProfileError"]
+        </div>
+    }
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            <div class="text-center mb-4">
+
+                @if (!string.IsNullOrWhiteSpace(Model.ProfilePictureUrl))
+                {
+                    <img src="@Model.ProfilePictureUrl"
+                         alt="Participant profile picture"
+                         class="rounded-circle"
+                         style="width:150px;height:150px;object-fit:cover;" />
+                }
+                else
+                {
+                    <div class="rounded-circle bg-light border mx-auto d-flex align-items-center justify-content-center"
+                         style="width:150px;height:150px;">
+                        <span class="text-muted">No picture</span>
+                    </div>
+                }
+
+            </div>
+
+            <h4 class="text-center mb-4">
+                @Model.FirstName @Model.LastName
+            </h4>
+
+            <hr />
+
+            <dl class="row">
+
+                <dt class="col-sm-3">First Name</dt>
+                <dd class="col-sm-9">@Model.FirstName</dd>
+
+                <dt class="col-sm-3">Last Name</dt>
+                <dd class="col-sm-9">@Model.LastName</dd>
+
+                <dt class="col-sm-3">Email Address</dt>
+                <dd class="col-sm-9">@Model.Email</dd>
+
+                <dt class="col-sm-3">Cell Number</dt>
+                <dd class="col-sm-9">@Model.CellNumber</dd>
+
+                <dt class="col-sm-3">Address</dt>
+                <dd class="col-sm-9">@Model.Address</dd>
+
+            </dl>
+
+        </div>
+    </div>
+
+    <div class="mt-3">
+        <a asp-controller="Participant"
+           asp-action="Index"
+           class="btn btn-secondary">
+            Back to Dashboard
+        </a>
+    </div>
+
+</div>

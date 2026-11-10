@@ -243,6 +243,34 @@ namespace RaceDay.Mvc.Controllers
 
             return View(enrolments);
         }
+
+
+        // POST: Allows a participant to cancel their enrolment
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CancelEnrolment(int id)
+        {
+            if (!IsParticipant())
+                return RedirectToAction("Login", "Auth");
+
+            var response = await _api.SendAsync(
+                HttpMethod.Delete,
+                $"api/enrolments/{id}");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                TempData["Error"] =
+                    "Could not cancel your enrolment. " +
+                    await response.Content.ReadAsStringAsync();
+
+                return RedirectToAction(nameof(MyEvents));
+            }
+
+            TempData["Success"] = "Your enrolment was cancelled successfully.";
+
+            return RedirectToAction(nameof(MyEvents));
+        }
+
         // GET: Displays full event details and available categories
         [HttpGet]
         public async Task<IActionResult> Details(int id)

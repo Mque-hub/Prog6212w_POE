@@ -112,5 +112,31 @@ namespace RaceDay.Mvc.Controllers
         }
 
 
+        public async Task<IActionResult> Profile()
+        {
+            if (!IsParticipant())
+                return RedirectToAction("Login", "Auth");
+
+            var response = await _api.SendAsync(
+                HttpMethod.Get,
+                "api/profiles/me");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                TempData["ProfileError"] =
+                    $"Could not load your profile. API returned: {(int)response.StatusCode}";
+
+                return View(new ParticipantProfileDto());
+            }
+
+            var profile =
+                await _api.ReadAsync<ParticipantProfileDto>(response);
+
+            if (profile == null)
+                profile = new ParticipantProfileDto();
+
+            return View(profile);
+        }
+
     }
 }

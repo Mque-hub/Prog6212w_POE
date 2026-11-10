@@ -47,8 +47,10 @@ namespace RaceDay.Api.Controllers
                 {
                     FirstName = participant.FirstName,
                     LastName = participant.LastName,
+                    Email = account.Email,
                     CellNumber = participant.CellNumber,
-                    Address = participant.Address
+                    Address = participant.Address,
+                    ProfilePictureUrl = participant.ProfilePictureUrl
                 });
             }
 

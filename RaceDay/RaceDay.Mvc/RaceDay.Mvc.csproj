@@ -17,4 +17,8 @@
     <ProjectReference Include="..\RaceDay.Contract\RaceDay.Contracts.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Views\NewFolder\" />
+  </ItemGroup>
+
 </Project>

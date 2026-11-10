@@ -1,6 +1,7 @@
 ﻿using System.Net.Http.Json;
 using System.Text.Json;
 namespace RaceDay.Mvc.Services;
+using System.Net.Http.Headers;
 public class RaceDayApiClient
 {
     private readonly IHttpClientFactory _factory;
@@ -18,17 +19,34 @@ public class RaceDayApiClient
     {
         return _factory.CreateClient("RaceDayApi");
     }
+
     private HttpRequestMessage CreateRequest(HttpMethod method, string url)
     {
         var request = new HttpRequestMessage(method, url);
+
+        // Retrieve the JWT access token from MVC Session.
+        string? accessToken = _httpContextAccessor.HttpContext?
+            .Session.GetString("AccessToken");
+
+        
+        if (!string.IsNullOrWhiteSpace(accessToken))
+        {
+            request.Headers.Authorization =
+                new AuthenticationHeaderValue("Bearer", accessToken);
+        }
+
+        // Preserve the existing API session cookie handling.
         string? apiCookie = _httpContextAccessor.HttpContext?
             .Session.GetString("ApiSessionCookie");
+
         if (!string.IsNullOrWhiteSpace(apiCookie))
         {
             request.Headers.TryAddWithoutValidation("Cookie", apiCookie);
         }
+
         return request;
     }
+
     public async Task<HttpResponseMessage> SendAsync(
         HttpMethod method, string url, object? body = null)
     {
