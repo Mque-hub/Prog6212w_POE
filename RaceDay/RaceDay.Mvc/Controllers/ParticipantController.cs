@@ -9,8 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 
-// Keep the using statement for the namespace
-// containing RaceDayApiClient if it is in another namespace.
+
 
 namespace RaceDay.Mvc.Controllers
 {
@@ -18,13 +17,13 @@ namespace RaceDay.Mvc.Controllers
     {
         private readonly RaceDayApiClient _api;
 
-        // Constructor
+        
         public ParticipantController(RaceDayApiClient api)
         {
             _api = api;
         }
 
-        // Check whether the logged-in user is a Participant
+        
         private bool IsParticipant()
         {
             return string.Equals(
@@ -33,9 +32,75 @@ namespace RaceDay.Mvc.Controllers
                 StringComparison.OrdinalIgnoreCase);
         }
 
-       
+
         // Participant home page
-        public async Task<IActionResult> Index(string? type, string? search)
+
+        [HttpGet]
+        public async Task<IActionResult> Index()
+        {
+            if (!IsParticipant())
+                return RedirectToAction("Login", "Auth");
+
+           
+            var eventsResponse = await _api.SendAsync(
+                HttpMethod.Get, "api/events");
+
+            var events = await _api.ReadAsync<List<EventDto>>(
+                eventsResponse) ?? new List<EventDto>();
+
+            
+            var enrolmentsResponse = await _api.SendAsync(
+                HttpMethod.Get, "api/enrolments/my");
+
+            var enrolments = await _api.ReadAsync<List<EnrolmentDto>>(
+                enrolmentsResponse) ?? new List<EnrolmentDto>();
+
+            
+            var resultsResponse = await _api.SendAsync(
+                HttpMethod.Get, "api/results/my");
+
+            var results = await _api.ReadAsync<List<ResultDto>>(
+                resultsResponse) ?? new List<ResultDto>();
+
+            
+            var today = DateOnly.FromDateTime(DateTime.Today);
+
+            var upcomingEvents = events
+                .Where(e => e.EventDate >= today)
+                .OrderBy(e => e.EventDate)
+                .ToList();
+
+            
+            var model = new ParticipantDashboardVm
+            {
+                TotalUpcomingEvents = upcomingEvents.Count,
+
+                TotalEnrolments = enrolments.Count,
+
+                CompletedResults = results.Count,
+
+                BestFinishPosition = results
+                    .Where(r => r.FinishPosition > 0)
+                    .Select(r => (int?)r.FinishPosition)
+                    .Min(),
+
+                UpcomingEvents = upcomingEvents
+                    .Take(3)
+                    .ToList(),
+
+                RecentResults = results
+                    .OrderByDescending(r => r.EventDate)
+                    .Take(3)
+                    .ToList()
+            };
+
+            return View(model);
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> AvailableEvents(
+            string? type, string? search)
         {
             if (!IsParticipant())
                 return RedirectToAction("Login", "Auth");
@@ -46,12 +111,13 @@ namespace RaceDay.Mvc.Controllers
             var events = await _api.ReadAsync<List<EventDto>>(response)
                          ?? new List<EventDto>();
 
-            // Display upcoming events only
+            
             events = events
-            .Where(e => e.EventDate >= DateOnly.FromDateTime(DateTime.Today))
-            .ToList();
+                .Where(e => e.EventDate >=
+                    DateOnly.FromDateTime(DateTime.Today))
+                .ToList();
 
-            // Filter by event type
+            
             if (!string.IsNullOrWhiteSpace(type))
             {
                 events = events
@@ -59,7 +125,7 @@ namespace RaceDay.Mvc.Controllers
                     .ToList();
             }
 
-            // Search by event name or location
+            
             if (!string.IsNullOrWhiteSpace(search))
             {
                 events = events.Where(e =>
@@ -73,8 +139,9 @@ namespace RaceDay.Mvc.Controllers
                 ).ToList();
             }
 
-            return View(events);
+            return View("AvailableEvents", events);
         }
+
         public async Task<IActionResult> MyEnrolments()
         {
             if (!IsParticipant())
@@ -136,6 +203,94 @@ namespace RaceDay.Mvc.Controllers
                 profile = new ParticipantProfileDto();
 
             return View(profile);
+        }
+
+
+        // POST: /Participant/UpdateProfile
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateProfile(
+            UpdateParticipantProfileRequestDTO request)
+        {
+            if (!IsParticipant())
+                return RedirectToAction("Login", "Auth");
+
+            var response = await _api.SendAsync(
+                HttpMethod.Put,
+                "api/profiles/me/participant",
+                request);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                TempData["ProfileError"] =
+                    $"Could not update your profile. API returned: {(int)response.StatusCode}";
+            }
+            else
+            {
+                TempData["ProfileSuccess"] =
+                    "Your profile has been updated successfully.";
+            }
+
+            return RedirectToAction(nameof(Profile));
+        }
+
+
+        // POST: /Participant/UploadProfilePicture
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UploadProfilePicture(IFormFile file)
+        {
+            if (!IsParticipant())
+                return RedirectToAction("Login", "Auth");
+
+            if (file == null || file.Length == 0)
+            {
+                TempData["ProfileError"] =
+                    "Please select an image to upload.";
+
+                return RedirectToAction(nameof(Profile));
+            }
+
+            if (file.Length > 5 * 1024 * 1024)
+            {
+                TempData["ProfileError"] =
+                    "Image size must not exceed 5 MB.";
+
+                return RedirectToAction(nameof(Profile));
+            }
+
+            var allowedTypes = new[]
+            {
+        "image/jpeg",
+        "image/png",
+        "image/webp"
+    };
+
+            if (!allowedTypes.Contains(
+                file.ContentType.ToLowerInvariant()))
+            {
+                TempData["ProfileError"] =
+                    "Only JPG, PNG and WEBP images are allowed.";
+
+                return RedirectToAction(nameof(Profile));
+            }
+
+            var response = await _api.UploadFileAsync(
+                "api/profiles/me/participant/profile-picture",
+                file);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                TempData["ProfileError"] =
+                    $"Could not upload your profile picture. API returned: {(int)response.StatusCode}";
+            }
+            else
+            {
+                TempData["ProfileSuccess"] =
+                    "Your profile picture has been updated successfully.";
+            }
+
+            return RedirectToAction(nameof(Profile));
         }
 
     }

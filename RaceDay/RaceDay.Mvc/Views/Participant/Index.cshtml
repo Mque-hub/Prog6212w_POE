@@ -1,135 +1,534 @@
-﻿@model List<RaceDay.Contracts.DTOs.EventDto>
+﻿@model RaceDay.Mvc.ViewModels.ParticipantDashboardVm
 
 @{
-    ViewData["Title"] = "Upcoming Events";
-
-    var eventTypes = Model
-        .Where(e => !string.IsNullOrWhiteSpace(e.EventType))
-        .Select(e => e.EventType)
-        .Distinct()
-        .ToList();
+    ViewData["Title"] = "Participant Dashboard";
 }
 
-<div class="container mt-5">
-
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h2>Upcoming Events</h2>
-            <p class="text-muted">Discover and explore upcoming RaceDay events.</p>
-        </div>
-
-        <a asp-controller="Participant"
-           asp-action="MyEnrolments"
-           class="btn btn-outline-primary">
-            My Enrolments
-        </a>
-    </div>
-
-    <!-- Search and Filter -->
-    <form asp-controller="Participant"
-          asp-action="Index"
-          method="get"
-          class="row g-3 mb-4">
-
-        <div class="col-md-5">
-            <input type="text"
-                   name="search"
-                   class="form-control"
-                   placeholder="Search by event name or location"
-                   value="@Context.Request.Query["search"]" />
-        </div>
-
-        <div class="col-md-4">
-            <select name="type" class="form-select">
-                <option value="">All Event Types</option>
-
-                @foreach (var eventType in eventTypes)
-                {
-                    <option value="@eventType"
-                            selected="@(Context.Request.Query["type"] == eventType)">
-                        @eventType
-                    </option>
-                }
-            </select>
-        </div>
-
-        <div class="col-md-3">
-            <button type="submit" class="btn btn-primary w-100">
-                Search Events
-            </button>
-        </div>
-
-    </form>
-
-    <!-- Event Listings -->
-    @if (Model == null || !Model.Any())
-    {
-        <div class="alert alert-info">
-            No upcoming events were found.
-        </div>
+<style>
+    :root {
+        --participant-navy: #262E57;
+        --participant-aqua: #A5E9E8;
+        --participant-crimson: #C32B42;
+        --participant-light: #F4F6FA;
+        --participant-grey: #6C757D;
     }
-    else
-    {
-        <div class="row">
 
-            @foreach (var eventItem in Model)
-            {
-                <div class="col-md-6 col-lg-4 mb-4">
+    .participant-dashboard {
+        color: var(--participant-navy);
+    }
 
-                    <div class="card h-100 shadow-sm">
+    .dashboard-header {
+        background: var(--participant-navy);
+        color: white;
+        padding: 32px;
+        border-radius: 16px;
+        margin-bottom: 28px;
+        position: relative;
+        overflow: hidden;
+    }
 
-                        @if (!string.IsNullOrWhiteSpace(eventItem.BannerImageUrl))
-                        {
-                            <img src="@eventItem.BannerImageUrl"
-                                 class="card-img-top"
-                                 alt="@eventItem.EventName"
-                                 style="height: 200px; object-fit: cover;" />
-                        }
+        .dashboard-header p {
+            color: #DDE3F4;
+            margin-bottom: 0;
+        }
 
-                        <div class="card-body">
+        .dashboard-header .header-accent {
+            color: var(--participant-aqua);
+        }
 
-                            <h5 class="card-title">
-                                @eventItem.EventName
-                            </h5>
+        .dashboard-header .btn {
+            background: var(--participant-aqua);
+            color: var(--participant-navy);
+            border: none;
+            font-weight: 600;
+        }
 
-                            <span class="badge bg-primary mb-2">
-                                @eventItem.EventType
-                            </span>
-
-                            <p class="card-text">
-                                @eventItem.Description
-                            </p>
-
-                            <hr />
-
-                            <p>
-                                <strong>Date:</strong>
-                                @eventItem.EventDate.ToString("dd MMMM yyyy")
-                            </p>
-
-                            <p>
-                                <strong>Location:</strong>
-                                @eventItem.Location
-                            </p>
-
-                            <p>
-                                <strong>Distance:</strong>
-                                @eventItem.Distance
-                            </p>
-
-                            <p>
-                                <strong>Duration:</strong>
-                                @eventItem.EventDuration
-                            </p>
-
-                        </div>
-
-                    </div>
-
-                </div>
+            .dashboard-header .btn:hover {
+                background: white;
             }
 
-        </div>
+    .stat-card {
+        background: white;
+        border: none;
+        border-radius: 14px;
+        padding: 22px;
+        height: 100%;
+        box-shadow: 0 4px 15px rgba(38, 46, 87, 0.07);
+        border-bottom: 4px solid var(--participant-aqua);
     }
+
+        .stat-card.crimson {
+            border-bottom-color: var(--participant-crimson);
+        }
+
+        .stat-card.navy {
+            border-bottom-color: var(--participant-navy);
+        }
+
+    .stat-label {
+        color: var(--participant-grey);
+        font-size: 0.9rem;
+        margin-bottom: 8px;
+    }
+
+    .stat-number {
+        color: var(--participant-navy);
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .stat-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--participant-aqua);
+        color: var(--participant-navy);
+        font-size: 1.2rem;
+    }
+
+        .stat-icon.crimson {
+            background: #F9E5E9;
+            color: var(--participant-crimson);
+        }
+
+    .section-card {
+        background: white;
+        border: none;
+        border-radius: 14px;
+        box-shadow: 0 4px 15px rgba(38, 46, 87, 0.06);
+        height: 100%;
+    }
+
+    .section-heading {
+        color: var(--participant-navy);
+        font-weight: 700;
+    }
+
+    .section-subtitle {
+        color: var(--participant-grey);
+        font-size: 0.9rem;
+    }
+
+    .event-item {
+        border: 1px solid #E9ECF2;
+        border-radius: 12px;
+        overflow: hidden;
+        margin-bottom: 16px;
+    }
+
+    .event-image {
+        width: 100%;
+        height: 145px;
+        object-fit: cover;
+    }
+
+    .event-image-placeholder {
+        height: 145px;
+        background: var(--participant-navy);
+        color: var(--participant-aqua);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+    }
+
+    .event-type {
+        display: inline-block;
+        background: #E2F8F7;
+        color: var(--participant-navy);
+        padding: 5px 11px;
+        border-radius: 20px;
+        font-size: 0.78rem;
+        font-weight: 600;
+    }
+
+    .event-title {
+        color: var(--participant-navy);
+        font-weight: 700;
+    }
+
+    .event-detail {
+        color: var(--participant-grey);
+        font-size: 0.88rem;
+    }
+
+    .result-item {
+        padding: 15px 0;
+        border-bottom: 1px solid #E9ECF2;
+    }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+    .result-position {
+        min-width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        background: #F9E5E9;
+        color: var(--participant-crimson);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+    }
+
+    .btn-participant {
+        background: var(--participant-crimson);
+        color: white;
+        border: none;
+        font-weight: 600;
+    }
+
+        .btn-participant:hover {
+            background: #A91F34;
+            color: white;
+        }
+
+    .btn-outline-participant {
+        color: var(--participant-navy);
+        border: 1px solid var(--participant-navy);
+        font-weight: 600;
+    }
+
+        .btn-outline-participant:hover {
+            background: var(--participant-navy);
+            color: white;
+        }
+
+    .empty-state {
+        background: var(--participant-light);
+        border-radius: 12px;
+        padding: 28px 18px;
+        text-align: center;
+        color: var(--participant-grey);
+    }
+
+        .empty-state .empty-icon {
+            font-size: 2rem;
+            color: var(--participant-navy);
+            margin-bottom: 10px;
+        }
+
+    @@media (max-width: 767px) {
+        .dashboard-header {
+            padding: 24px 20px;
+        }
+
+            .dashboard-header .btn {
+                margin-top: 18px;
+            }
+
+        .stat-number {
+            font-size: 1.7rem;
+        }
+    }
+</style>
+
+<div class="container participant-dashboard mb-5">
+
+    <!-- Dashboard Welcome -->
+    <div class="dashboard-header">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h2 class="fw-bold mb-2">
+                    Welcome Back to <span class="header-accent">RaceDay!</span>
+                </h2>
+
+                <p>
+                    Track your events, monitor your race results,
+                    and discover your next challenge.
+                </p>
+            </div>
+
+            <div class="col-lg-4 text-lg-end">
+                <a asp-controller="Participant"
+                   asp-action="AvailableEvents"
+                   class="btn px-4 py-2">
+                    Explore Events
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Statistics -->
+    <div class="row g-4 mb-4">
+
+        <div class="col-6 col-lg-3">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="stat-label">Upcoming Events</span>
+                    <div class="stat-icon">
+                        <i class="bi bi-calendar-event"></i>
+                    </div>
+                </div>
+
+                <h3 class="stat-number">
+                    @Model.TotalUpcomingEvents
+                </h3>
+            </div>
+        </div>
+
+        <div class="col-6 col-lg-3">
+            <div class="stat-card crimson">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="stat-label">My Enrolments</span>
+                    <div class="stat-icon crimson">
+                        <i class="bi bi-clipboard-check"></i>
+                    </div>
+                </div>
+
+                <h3 class="stat-number">
+                    @Model.TotalEnrolments
+                </h3>
+            </div>
+        </div>
+
+        <div class="col-6 col-lg-3">
+            <div class="stat-card navy">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="stat-label">Completed Results</span>
+                    <div class="stat-icon">
+                        <i class="bi bi-trophy"></i>
+                    </div>
+                </div>
+
+                <h3 class="stat-number">
+                    @Model.CompletedResults
+                </h3>
+            </div>
+        </div>
+
+        <div class="col-6 col-lg-3">
+            <div class="stat-card crimson">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="stat-label">Best Position</span>
+                    <div class="stat-icon crimson">
+                        <i class="bi bi-award"></i>
+                    </div>
+                </div>
+
+                <h3 class="stat-number">
+                    @(Model.BestFinishPosition.HasValue
+                                        ? "#" + Model.BestFinishPosition.Value
+                                        : "—")
+                </h3>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row g-4">
+
+        <!-- Upcoming Events -->
+        <div class="col-lg-7">
+            <div class="section-card p-4">
+
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h4 class="section-heading mb-1">Upcoming Events</h4>
+                        <p class="section-subtitle mb-0">
+                            Discover your next race.
+                        </p>
+                    </div>
+
+                    <a asp-controller="Participant"
+                       asp-action="AvailableEvents"
+                       class="btn btn-outline-participant btn-sm">
+                        View All
+                    </a>
+                </div>
+
+                @if (Model.UpcomingEvents == null ||
+                                !Model.UpcomingEvents.Any())
+                {
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <i class="bi bi-calendar-x"></i>
+                        </div>
+
+                        <h6 class="fw-bold">No Upcoming Events</h6>
+
+                        <p class="mb-3">
+                            There are currently no upcoming events to display.
+                        </p>
+
+                        <a asp-controller="Participant"
+                           asp-action="AvailableEvents"
+                           class="btn btn-participant btn-sm">
+                            Browse Events
+                        </a>
+                    </div>
+                }
+                else
+                {
+                    @foreach (var eventItem in Model.UpcomingEvents)
+                    {
+                        <div class="event-item">
+
+                            @if (!string.IsNullOrWhiteSpace(eventItem.BannerImageUrl))
+                            {
+                                <img src="@eventItem.BannerImageUrl"
+                                     class="event-image"
+                                     alt="@eventItem.EventName" />
+                            }
+                            else
+                            {
+                                <div class="event-image-placeholder">
+                                    <i class="bi bi-flag"></i>
+                                </div>
+                            }
+
+                            <div class="p-3">
+
+                                <span class="event-type">
+                                    @eventItem.EventType
+                                </span>
+
+                                <h5 class="event-title mt-2 mb-2">
+                                    @eventItem.EventName
+                                </h5>
+
+                                <p class="event-detail mb-1">
+                                    <i class="bi bi-calendar3 me-2"></i>
+                                    @eventItem.EventDate.ToString("dd MMMM yyyy")
+                                </p>
+
+                                <p class="event-detail mb-1">
+                                    <i class="bi bi-geo-alt me-2"></i>
+                                    @eventItem.Location
+                                </p>
+
+                                <p class="event-detail mb-0">
+                                    <i class="bi bi-signpost me-2"></i>
+                                    @eventItem.Distance
+                                </p>
+
+                            </div>
+                        </div>
+                    }
+                }
+
+            </div>
+        </div>
+
+        <!-- Recent Results -->
+        <div class="col-lg-5">
+            <div class="section-card p-4">
+
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h4 class="section-heading mb-1">Recent Results</h4>
+                        <p class="section-subtitle mb-0">
+                            Your latest race performances.
+                        </p>
+                    </div>
+
+                    <a asp-controller="Participant"
+                       asp-action="MyResults"
+                       class="btn btn-outline-participant btn-sm">
+                        View All
+                    </a>
+                </div>
+
+                @if (Model.RecentResults == null ||
+                                !Model.RecentResults.Any())
+                {
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <i class="bi bi-trophy"></i>
+                        </div>
+
+                        <h6 class="fw-bold">No Results Yet</h6>
+
+                        <p class="mb-0">
+                            Your race results will appear here once they are available.
+                        </p>
+                    </div>
+                }
+                else
+                {
+                    @foreach (var result in Model.RecentResults)
+                    {
+                        <div class="result-item">
+                            <div class="d-flex align-items-center gap-3">
+
+                                <div class="result-position">
+                                    #@result.FinishPosition
+                                </div>
+
+                                <div class="flex-grow-1">
+                                    <h6 class="fw-bold mb-1">
+                                        @result.EventName
+                                    </h6>
+
+                                    <p class="section-subtitle mb-1">
+                                        @result.CategoryName
+                                    </p>
+
+                                    <small class="text-muted">
+                                        @result.EventDate.ToString("dd MMM yyyy")
+                                    </small>
+                                </div>
+
+                            </div>
+
+                            <div class="mt-2">
+                                <small class="text-muted">
+                                    <i class="bi bi-stopwatch me-1"></i>
+                                    Finish Time:
+                                    <strong>
+                                        @result.FinishTime
+                                    </strong>
+                                </small>
+                            </div>
+                        </div>
+                    }
+                }
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Quick Navigation -->
+    <div class="section-card p-4 mt-4">
+        <h4 class="section-heading mb-3">Quick Access</h4>
+
+        <div class="row g-3">
+
+            <div class="col-md-4">
+                <a asp-controller="Participant"
+                   asp-action="MyEnrolments"
+                   class="btn btn-outline-participant w-100 py-3">
+                    <i class="bi bi-clipboard-check me-2"></i>
+                    My Enrolments
+                </a>
+            </div>
+
+            <div class="col-md-4">
+                <a asp-controller="Participant"
+                   asp-action="MyResults"
+                   class="btn btn-outline-participant w-100 py-3">
+                    <i class="bi bi-trophy me-2"></i>
+                    My Results
+                </a>
+            </div>
+
+            <div class="col-md-4">
+                <a asp-controller="Participant"
+                   asp-action="Profile"
+                   class="btn btn-participant w-100 py-3">
+                    <i class="bi bi-person-circle me-2"></i>
+                    My Profile
+                </a>
+            </div>
+
+        </div>
+    </div>
 
 </div>
