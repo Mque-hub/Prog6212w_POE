@@ -105,3 +105,20 @@ It is "Updated" because it was debugged until it became successful
 
 ### Video Presentation
 Youtube Link: [Here is my Part 2 pesentation video link](https://youtu.be/8tISr3vJ4MI)
+
+## Part 3 - MVC Application
+### Technologies Used
+- SQL Server Management Studio  SQLEXPRESS
+- .NET 8.0.0
+- Visual Studio 2022
+- Azurite (This is a free and local version of Azure)
+- Blob Storage
+#### Database Setup (Refer to Part 2 in the Readme)
+## How to Run RaceDay.Api
+- On RaceDay Solution, right click it -> Configure Startup Projects
+- select Sinlge Startup Projects -> Make sure it is on RaceDay.Api-> Click ok
+- Then run the project
+## How to Run RaceDay.Mvc Locally
+- On RaceDay Solution, right click it -> Configure Startup Projects
+- Select Multiple Startup Projects -> On the Action column, make sure Acion is on Start for both RaceDay.Api and RaceDay.Mvc-> Click ok
+- Then run the project
